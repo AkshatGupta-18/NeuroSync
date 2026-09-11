@@ -27,7 +27,10 @@ class AssessmentSession(models.Model):
     stress_score = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
         null=True,
         blank=True,
     )
@@ -35,7 +38,10 @@ class AssessmentSession(models.Model):
     fatigue_score = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
         null=True,
         blank=True,
     )
@@ -43,7 +49,10 @@ class AssessmentSession(models.Model):
     mental_fitness_score = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
         null=True,
         blank=True,
     )
@@ -51,7 +60,10 @@ class AssessmentSession(models.Model):
     cognitive_fitness_score = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        validators=[
+            MinValueValidator(0),
+            MaxValueValidator(100),
+        ],
         null=True,
         blank=True,
     )
@@ -86,3 +98,82 @@ class AssessmentSession(models.Model):
 
     def __str__(self):
         return f"Assessment #{self.pk} - {self.user.username}"
+
+
+class AssessmentInput(models.Model):
+    class InputType(models.TextChoices):
+        VOICE = "voice", "Voice"
+        VIDEO = "video", "Video"
+        COGNITIVE = "cognitive", "Cognitive"
+
+    class Status(models.TextChoices):
+        UPLOADED = "uploaded", "Uploaded"
+        PROCESSING = "processing", "Processing"
+        PROCESSED = "processed", "Processed"
+        FAILED = "failed", "Failed"
+
+    assessment = models.ForeignKey(
+        AssessmentSession,
+        on_delete=models.CASCADE,
+        related_name="inputs",
+        db_index=True,
+    )
+
+    input_type = models.CharField(
+        max_length=20,
+        choices=InputType.choices,
+        db_index=True,
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.UPLOADED,
+        db_index=True,
+    )
+
+    file = models.FileField(
+        upload_to="assessment_inputs/",
+        null=True,
+        blank=True,
+    )
+
+    metadata = models.JSONField(
+        default=dict,
+        blank=True,
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        db_index=True,
+    )
+
+    processed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    failure_reason = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+    class Meta:
+        ordering = ["created_at"]
+        indexes = [
+            models.Index(
+                fields=["assessment", "input_type"],
+                name="assessment_input_type_idx",
+            ),
+            models.Index(
+                fields=["status", "created_at"],
+                name="assessment_input_status_idx",
+            ),
+        ]
+
+    def __str__(self):
+        return (
+            f"Input #{self.pk} - "
+            f"{self.get_input_type_display()} - "
+            f"Assessment #{self.assessment_id}"
+        )
