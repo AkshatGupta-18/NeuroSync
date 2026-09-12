@@ -1,9 +1,13 @@
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import AssessmentSession, AssessmentInput
+from .scoring import calculate_scores
 from .serializers import (
     AssessmentSessionSerializer,
     AssessmentInputSerializer,
@@ -30,6 +34,91 @@ class AssessmentSessionDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return AssessmentSession.objects.filter(
             user=self.request.user
+        )
+
+
+class AssessmentCompleteView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, assessment_id):
+        assessment = get_object_or_404(
+            AssessmentSession,
+            id=assessment_id,
+            user=request.user,
+        )
+
+        if assessment.status == AssessmentSession.Status.COMPLETED:
+            return Response(
+                {
+                    "detail": "This assessment has already been completed."
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        cognitive_input = (
+            AssessmentInput.objects.filter(
+                assessment=assessment,
+                input_type=AssessmentInput.InputType.COGNITIVE,
+            )
+            .order_by("-created_at")
+            .first()
+        )
+
+        if cognitive_input is None:
+            return Response(
+                {
+                    "detail": (
+                        "Cognitive assessment responses are required "
+                        "before completing the assessment."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        responses = cognitive_input.metadata.get("responses")
+
+        try:
+            scores = calculate_scores(responses)
+        except ValueError as exc:
+            return Response(
+                {
+                    "detail": str(exc)
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        assessment.status = AssessmentSession.Status.PROCESSING
+        assessment.save(
+            update_fields=["status"]
+        )
+
+        assessment.stress_score = scores["stress_score"]
+        assessment.fatigue_score = scores["fatigue_score"]
+        assessment.mental_fitness_score = scores[
+            "mental_fitness_score"
+        ]
+        assessment.cognitive_fitness_score = scores[
+            "cognitive_fitness_score"
+        ]
+        assessment.status = AssessmentSession.Status.COMPLETED
+        assessment.completed_at = timezone.now()
+        assessment.failure_reason = None
+
+        assessment.save(
+            update_fields=[
+                "stress_score",
+                "fatigue_score",
+                "mental_fitness_score",
+                "cognitive_fitness_score",
+                "status",
+                "completed_at",
+                "failure_reason",
+            ]
+        )
+
+        return Response(
+            AssessmentSessionSerializer(assessment).data,
+            status=status.HTTP_200_OK,
         )
 
 

@@ -3,191 +3,370 @@ import { useNavigate } from "react-router-dom";
 import { apiRequest } from "../services/api";
 import { clearTokens } from "../services/auth";
 
-/* ---------------------------------------------------------
-   NeuroSync — Dashboard
-   Protected authenticated user dashboard.
---------------------------------------------------------- */
-
-const displayFont = { fontFamily: "'Space Grotesk', sans-serif" };
-const monoFont = { fontFamily: "'IBM Plex Mono', monospace" };
-
-/* ---------- Icons ---------- */
-
-const iconProps = {
-  viewBox: "0 0 24 24",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.6,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
+const displayFont = {
+  fontFamily: "'Space Grotesk', sans-serif",
 };
 
-function IconMark({ className }) {
+const monoFont = {
+  fontFamily: "'IBM Plex Mono', monospace",
+};
+
+function IconMark({ className = "h-5 w-5" }) {
   return (
-    <svg viewBox="0 0 32 32" className={className}>
-      <circle
-        cx="16"
-        cy="16"
-        r="13"
-        stroke="#34d399"
-        strokeWidth="1.6"
-        fill="none"
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      className={className}
+      aria-hidden="true"
+    >
+      <path
+        d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
       />
       <path
-        d="M7 16h4l2-6 4 12 2-8 1.5 2H25"
-        stroke="#a78bfa"
-        strokeWidth="1.6"
+        d="M8 12c1.4-1.7 2.87-2.55 4.4-2.55 1.53 0 2.73.7 3.6 2.1"
+        stroke="currentColor"
+        strokeWidth="1.8"
         strokeLinecap="round"
-        strokeLinejoin="round"
-        fill="none"
+      />
+      <path
+        d="M8.5 15.2c1.2.9 2.37 1.35 3.5 1.35 1.2 0 2.37-.45 3.5-1.35"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
       />
     </svg>
   );
 }
 
-function IconMenu({ className }) {
+function IconMenu({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M4 7h16M4 12h16M4 17h16" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M4 7h16M4 12h16M4 17h16"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconClose({ className }) {
+function IconClose({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M6 6l12 12M18 6L6 18" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="m6 6 12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconGrid({ className }) {
+function IconGrid({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <rect x="4" y="4" width="7" height="7" rx="1.5" />
-      <rect x="13" y="4" width="7" height="7" rx="1.5" />
-      <rect x="4" y="13" width="7" height="7" rx="1.5" />
-      <rect x="13" y="13" width="7" height="7" rx="1.5" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <rect
+        x="4"
+        y="4"
+        width="6"
+        height="6"
+        rx="1.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <rect
+        x="14"
+        y="4"
+        width="6"
+        height="6"
+        rx="1.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <rect
+        x="4"
+        y="14"
+        width="6"
+        height="6"
+        rx="1.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <rect
+        x="14"
+        y="14"
+        width="6"
+        height="6"
+        rx="1.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
     </svg>
   );
 }
 
-function IconPulseLine({ className }) {
+function IconPulseLine({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M3 12h4l2-6 3 12 2-8 1.5 2H21" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M3 12h4l2.2-5 4.1 10 2.2-5H21"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconTrend({ className }) {
+function IconTrend({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M4 16l5-5 4 4 7-8" />
-      <path d="M14 7h6v6" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M4 17 9 12l3 3 7-8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M15 7h4v4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconScan({ className }) {
+function IconScan({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M4 8V6a2 2 0 0 1 2-2h2M20 8V6a2 2 0 0 0-2-2h-2M4 16v2a2 2 0 0 0 2 2h2M20 16v2a2 2 0 0 1-2 2h-2" />
-      <rect x="8" y="8" width="8" height="8" rx="1" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7 4H5a1 1 0 0 0-1 1v2M17 4h2a1 1 0 0 1 1 1v2M7 20H5a1 1 0 0 1-1-1v-2M17 20h2a1 1 0 0 0 1-1v-2"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M8 12h8"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconSettings({ className }) {
+function IconSettings({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.5-2.4 1a7.7 7.7 0 0 0-1.7-1L15 3h-4l-.3 2.5a7.7 7.7 0 0 0-1.7 1l-2.4-1-2 3.5L6.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.5 2.4-1a7.7 7.7 0 0 0 1.7-1L11 21h4l.3-2.5a7.7 7.7 0 0 0 1.7-1l2.4 1 2-3.5-2-1.5Z" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M19.4 15a1.8 1.8 0 0 0 .36 1.98l.06.06-1.86 1.86-.06-.06a1.8 1.8 0 0 0-1.98-.36 1.8 1.8 0 0 0-1.1 1.65V21h-2.63v-.09a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-1.98.36l-.06.06-1.86-1.86.06-.06A1.8 1.8 0 0 0 5.6 15a1.8 1.8 0 0 0-1.65-1.1H3.86v-2.63h.09A1.8 1.8 0 0 0 5.6 10.2a1.8 1.8 0 0 0-.36-1.98l-.06-.06 1.86-1.86.06.06a1.8 1.8 0 0 0 1.98.36 1.8 1.8 0 0 0 1.1-1.65V5h2.63v.09a1.8 1.8 0 0 0 1.1 1.65 1.8 0 0 0 1.98-.36l.06-.06 1.86 1.86-.06.06A1.8 1.8 0 0 0 19.4 10c.2.66.8 1.1 1.48 1.1h.09v2.63h-.09A1.8 1.8 0 0 0 19.4 15Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconLogout({ className }) {
+function IconLogout({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3" />
-      <path d="M16 16l4-4-4-4" />
-      <path d="M20 12H9" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M10 5H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M14 8l4 4-4 4M18 12H9"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconBell({ className }) {
+function IconBell({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M6 9a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 5.5H4.5S6 13 6 9Z" />
-      <path d="M10 19a2 2 0 0 0 4 0" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 21h4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconCamera({ className }) {
+function IconCamera({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M4 8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8Z" />
-      <circle cx="12" cy="13" r="3.2" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M4 8.5A2.5 2.5 0 0 1 6.5 6H9l1.3-2h3.4L15 6h2.5A2.5 2.5 0 0 1 20 8.5v8A2.5 2.5 0 0 1 17.5 19h-11A2.5 2.5 0 0 1 4 16.5v-8Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <circle
+        cx="12"
+        cy="12.5"
+        r="3.2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
     </svg>
   );
 }
 
-function IconWatch({ className }) {
+function IconWatch({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <rect x="7" y="7" width="10" height="10" rx="2.5" />
-      <path d="M9 4h6M9 20h6M12 10.5V13l1.6 1" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <rect
+        x="7"
+        y="6"
+        width="10"
+        height="12"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="1.7"
+      />
+      <path
+        d="M9 3h6M9 21h6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <path
+        d="M10 12h2l1-2 1 4 1-2"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconUpload({ className }) {
+function IconUpload({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M12 16V5M8 9l4-4 4 4" />
-      <path d="M5 16v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M12 15V4M8 8l4-4 4 4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M5 14v4a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconX({ className }) {
+function IconX({ className = "h-4 w-4" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M6 6l12 12M18 6L6 18" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="m6 6 12 12M18 6 6 18"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-function IconAlert({ className }) {
+function IconAlert({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M12 4 3 20h18L12 4Z" />
-      <path d="M12 10v4M12 17h.01" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M12 4 21 19H3L12 4Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M12 9v4"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
+      <circle cx="12" cy="16" r="0.8" fill="currentColor" />
     </svg>
   );
 }
 
-function IconCheck({ className }) {
+function IconCheck({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M5 13l4 4L19 7" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="m5 12 4 4L19 6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
-function IconFile({ className }) {
+function IconFile({ className = "h-5 w-5" }) {
   return (
-    <svg {...iconProps} className={className}>
-      <path d="M6 3h8l4 4v14H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z" />
-      <path d="M14 3v4h4" />
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7 3h7l4 4v14H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 3v5h5M9 12h6M9 16h6"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
 
-/* ---------- Design tokens ---------- */
+function IconArrowRight({ className = "h-5 w-5" }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M5 12h14M13 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 const accent = {
   emerald: {
@@ -220,123 +399,146 @@ const accent = {
   },
 };
 
-/* ---------- Mock data ---------- */
-
 const navItems = [
-  { label: "Dashboard", icon: IconGrid, href: "/dashboard", active: true },
-  { label: "Signals", icon: IconPulseLine, href: "/signals" },
-  { label: "Trends", icon: IconTrend, href: "/trends" },
-  { label: "Medical scans", icon: IconScan, href: "/scans" },
-  { label: "Settings", icon: IconSettings, href: "/settings" },
-];
-
-const initialMetrics = [
   {
-    key: "stress",
-    label: "Stress",
-    value: 24,
-    tag: "Low",
-    delta: -4,
-    color: accent.emerald,
+    label: "Dashboard",
+    path: "/dashboard",
+    icon: IconGrid,
   },
   {
-    key: "fatigue",
-    label: "Fatigue",
-    value: 18,
-    tag: "Low",
-    delta: -2,
-    color: accent.emerald,
+    label: "Signals",
+    path: "/signals",
+    icon: IconPulseLine,
   },
   {
-    key: "focus",
-    label: "Focus",
-    value: 82,
-    tag: "High",
-    delta: 6,
-    color: accent.violet,
+    label: "Trends",
+    path: "/trends",
+    icon: IconTrend,
   },
   {
-    key: "emotional",
-    label: "Emotional wellness",
-    value: 76,
-    tag: "Good",
-    delta: 3,
-    color: accent.emerald,
+    label: "Medical scans",
+    path: "/scans",
+    icon: IconScan,
+  },
+  {
+    label: "Settings",
+    path: "/settings",
+    icon: IconSettings,
   },
 ];
-
-const weeklyTrend = [62, 68, 60, 71, 74, 70, 78];
-const weekLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const initialRecommendations = [
   {
-    id: "r1",
-    text: "Take a 5-minute breathing break",
-    tag: "Stress",
+    id: 1,
+    title: "Take a breathing break",
+    description:
+      "A short breathing exercise can support a calmer mental state.",
+    accent: "emerald",
   },
   {
-    id: "r2",
-    text: "You've been at the screen a while — stretch",
-    tag: "Fatigue",
+    id: 2,
+    title: "Stretch for five minutes",
+    description:
+      "A short movement break may help support energy and recovery.",
+    accent: "violet",
   },
   {
-    id: "r3",
-    text: "Try winding down 30 minutes earlier tonight",
-    tag: "Sleep",
+    id: 3,
+    title: "Wind down earlier",
+    description:
+      "Consistent recovery habits can support your overall wellness.",
+    accent: "amber",
   },
 ];
 
 const initialAlerts = [
   {
-    id: "a1",
-    level: "amber",
-    text: "Fatigue trending up over the last 3 sessions",
-    time: "2h ago",
+    id: 1,
+    title: "Assessment available",
+    description:
+      "Complete a fresh wellness check-in to update your current indicators.",
+    type: "info",
   },
   {
-    id: "a2",
-    level: "emerald",
-    text: "Focus score hit a 7-day high",
-    time: "Yesterday",
-  },
-  {
-    id: "a3",
-    level: "violet",
-    text: "New weekly trend report is ready",
-    time: "2 days ago",
+    id: 2,
+    title: "Wellness indicators are personal",
+    description:
+      "Use changes over time as a self-monitoring signal, not a medical diagnosis.",
+    type: "success",
   },
 ];
 
 const activityLog = [
   {
-    id: "l1",
-    label: "Webcam read",
-    detail: "Stress 22 · Focus 80",
-    time: "9:42 AM",
+    id: 1,
+    title: "Webcam signal read",
+    time: "Today, 10:42 AM",
+    icon: IconCamera,
   },
   {
-    id: "l2",
-    label: "Self-reported mood",
-    detail: 'Logged as "Good"',
-    time: "Yesterday, 8:10 PM",
+    id: 2,
+    title: "Mood check-in completed",
+    time: "Today, 9:18 AM",
+    icon: IconPulseLine,
   },
   {
-    id: "l3",
-    label: "Wearable sync",
-    detail: "HRV, sleep imported",
-    time: "Yesterday, 7:05 AM",
+    id: 3,
+    title: "Wearable synced",
+    time: "Yesterday, 8:30 PM",
+    icon: IconWatch,
   },
   {
-    id: "l4",
-    label: "Scan uploaded",
-    detail: "chest_xray_03.png",
-    time: "3 days ago",
+    id: 4,
+    title: "Medical scan uploaded",
+    time: "Yesterday, 4:12 PM",
+    icon: IconFile,
   },
 ];
 
-/* ---------- Component ---------- */
+function toNumber(value) {
+  const parsed = Number(value);
 
-export default function Dashboard() {
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function calculateOverallWellness(assessment) {
+  if (!assessment) {
+    return null;
+  }
+
+  const scores = [
+    toNumber(assessment.stress_score),
+    toNumber(assessment.fatigue_score),
+    toNumber(assessment.mental_fitness_score),
+    toNumber(assessment.cognitive_fitness_score),
+  ];
+
+  if (scores.some((score) => score === null)) {
+    return null;
+  }
+
+  return Math.round(
+    scores.reduce((total, score) => total + score, 0) / scores.length
+  );
+}
+
+function getScoreLabel(score) {
+  if (score === null) {
+    return "not available";
+  }
+
+  if (score >= 75) {
+    return "strong";
+  }
+
+  if (score >= 50) {
+    return "moderate";
+  }
+
+  return "needs attention";
+}
+
+function Dashboard() {
   const navigate = useNavigate();
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -348,29 +550,41 @@ export default function Dashboard() {
   const [alerts, setAlerts] = useState(initialAlerts);
   const [scanFile, setScanFile] = useState(null);
   const [mood, setMood] = useState(null);
-
   const [user, setUser] = useState(null);
+  const [latestAssessment, setLatestAssessment] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [assessmentLoading, setAssessmentLoading] = useState(true);
+  const [assessmentError, setAssessmentError] = useState("");
 
   useEffect(() => {
-    if (!document.head.querySelector("[data-neurosync-fonts]")) {
-      const link = document.createElement("link");
-      link.rel = "stylesheet";
-      link.href =
-        "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap";
-      link.setAttribute("data-neurosync-fonts", "true");
-      document.head.appendChild(link);
-    }
+    const fontLink = document.createElement("link");
+
+    fontLink.rel = "stylesheet";
+    fontLink.href =
+      "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap";
+
+    document.head.appendChild(fontLink);
+
+    return () => {
+      document.head.removeChild(fontLink);
+    };
   }, []);
 
   useEffect(() => {
     let isMounted = true;
 
-    const fetchProfile = async () => {
+    const loadDashboardData = async () => {
       try {
-        const response = await apiRequest("/users/profile/");
+        const [profileResponse, assessmentsResponse] =
+          await Promise.all([
+            apiRequest("/users/profile/"),
+            apiRequest("/assessments/"),
+          ]);
 
-        if (response.status === 401) {
+        if (
+          profileResponse.status === 401 ||
+          assessmentsResponse.status === 401
+        ) {
           clearTokens();
 
           if (isMounted) {
@@ -380,29 +594,64 @@ export default function Dashboard() {
           return;
         }
 
-        if (!response.ok) {
+        if (!profileResponse.ok) {
           console.error(
             "Profile request failed with status:",
-            response.status
+            profileResponse.status
           );
+        } else {
+          const profileData = await profileResponse.json();
+
+          if (isMounted) {
+            setUser(profileData);
+          }
+        }
+
+        if (!assessmentsResponse.ok) {
+          console.error(
+            "Assessment request failed with status:",
+            assessmentsResponse.status
+          );
+
+          if (isMounted) {
+            setAssessmentError(
+              "We couldn't load your latest wellness assessment."
+            );
+          }
+
           return;
         }
 
-        const data = await response.json();
+        const assessmentsData = await assessmentsResponse.json();
+
+        const assessments = Array.isArray(assessmentsData)
+          ? assessmentsData
+          : assessmentsData.results || [];
+
+        const completedAssessment = assessments.find(
+          (assessment) => assessment.status === "completed"
+        );
 
         if (isMounted) {
-          setUser(data);
+          setLatestAssessment(completedAssessment || null);
         }
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Failed to load dashboard:", error);
+
+        if (isMounted) {
+          setAssessmentError(
+            "Unable to connect to NeuroSync right now. Please try again."
+          );
+        }
       } finally {
         if (isMounted) {
           setLoading(false);
+          setAssessmentLoading(false);
         }
       }
     };
 
-    fetchProfile();
+    loadDashboardData();
 
     return () => {
       isMounted = false;
@@ -415,703 +664,847 @@ export default function Dashboard() {
     navigate("/login", { replace: true });
   };
 
-  const greeting = useMemo(() => {
-    const h = new Date().getHours();
+  const handleStartAssessment = () => {
+    navigate("/assessment");
+  };
 
-    if (h < 12) return "Good morning";
-    if (h < 17) return "Good afternoon";
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+      return "Good morning";
+    }
+
+    if (hour < 18) {
+      return "Good afternoon";
+    }
 
     return "Good evening";
   }, []);
 
-  const wellnessScore = 78;
-  const angleDeg = 180 - (wellnessScore / 100) * 180;
-  const angleRad = (angleDeg * Math.PI) / 180;
-  const needleX = 100 + 62 * Math.cos(angleRad);
-  const needleY = 100 - 62 * Math.sin(angleRad);
+  const wellnessScore = calculateOverallWellness(latestAssessment);
 
-  const trendPoints = weeklyTrend.map((value, index) => {
-    const x = (index / (weeklyTrend.length - 1)) * 400;
-    const y = 110 - (value / 100) * 90;
+  const metrics = latestAssessment
+    ? [
+        {
+          label: "Stress balance",
+          value: toNumber(latestAssessment.stress_score),
+          unit: getScoreLabel(toNumber(latestAssessment.stress_score)),
+          accent: "emerald",
+          icon: IconPulseLine,
+        },
+        {
+          label: "Energy & recovery",
+          value: toNumber(latestAssessment.fatigue_score),
+          unit: getScoreLabel(toNumber(latestAssessment.fatigue_score)),
+          accent: "violet",
+          icon: IconTrend,
+        },
+        {
+          label: "Cognitive fitness",
+          value: toNumber(latestAssessment.cognitive_fitness_score),
+          unit: getScoreLabel(
+            toNumber(latestAssessment.cognitive_fitness_score)
+          ),
+          accent: "amber",
+          icon: IconGrid,
+        },
+        {
+          label: "Mental fitness",
+          value: toNumber(latestAssessment.mental_fitness_score),
+          unit: getScoreLabel(
+            toNumber(latestAssessment.mental_fitness_score)
+          ),
+          accent: "rose",
+          icon: IconPulseLine,
+        },
+      ]
+    : [];
 
-    return [x, y];
-  });
+  const gaugeScore = wellnessScore ?? 0;
 
-  const trendPath = trendPoints
-    .map(
-      ([x, y], index) =>
-        `${index === 0 ? "M" : "L"}${x.toFixed(1)},${y.toFixed(1)}`
-    )
-    .join(" ");
+  const gaugeAngle = 180 - (gaugeScore / 100) * 180;
+  const angleInRadians = (gaugeAngle * Math.PI) / 180;
 
-  function dismissRecommendation(id) {
-    setRecommendations((prev) => prev.filter((r) => r.id !== id));
+  const needleX = 100 + 80 * Math.cos(angleInRadians);
+  const needleY = 100 - 80 * Math.sin(angleInRadians);
+
+  const dismissRecommendation = (id) => {
+    setRecommendations((current) =>
+      current.filter((recommendation) => recommendation.id !== id)
+    );
+  };
+
+  const dismissAlert = (id) => {
+    setAlerts((current) =>
+      current.filter((alert) => alert.id !== id)
+    );
+  };
+
+  const handleScanChange = (event) => {
+    const file = event.target.files?.[0] ?? null;
+    setScanFile(file);
+  };
+
+  const userInitial =
+    user?.first_name?.charAt(0)?.toUpperCase() ||
+    user?.username?.charAt(0)?.toUpperCase() ||
+    "U";
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-slate-100">
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-emerald-400" />
+            <p className="text-sm text-slate-400">
+              Loading your NeuroSync dashboard...
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
-
-  function dismissAlert(id) {
-    setAlerts((prev) => prev.filter((a) => a.id !== id));
-  }
-
-  function handleScanChange(event) {
-    const file = event.target.files?.[0];
-
-    if (file) {
-      setScanFile(file.name);
-    }
-  }
-
-  const userInitial = user?.username
-    ? user.username.charAt(0).toUpperCase()
-    : "U";
 
   return (
     <div
-      className="min-h-screen bg-slate-950 text-slate-100 antialiased"
-      style={{ fontFamily: "'IBM Plex Sans', sans-serif" }}
+      className="min-h-screen bg-slate-950 text-slate-100"
+      style={displayFont}
     >
-      <div className="flex">
-        <aside className="sticky top-0 hidden h-screen w-64 flex-none flex-col border-r border-white/10 bg-slate-950 px-5 py-6 lg:flex">
-          <a
-            href="/dashboard"
-            className="flex items-center gap-2.5 px-1"
-          >
-            <IconMark className="h-8 w-8" />
+      {sidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close navigation"
+          className="fixed inset-0 z-40 bg-slate-950/70 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-            <span
-              style={displayFont}
-              className="text-lg font-semibold tracking-tight"
-            >
-              NeuroSync
-            </span>
-          </a>
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/10 bg-slate-950/95 px-5 py-6 backdrop-blur-xl transition-transform duration-200 lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-400">
+              <IconMark className="h-6 w-6" />
+            </div>
 
-          <nav className="mt-10 flex flex-1 flex-col gap-1">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                  item.active
-                    ? "bg-white/5 text-slate-100"
-                    : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
-                }`}
-              >
-                <item.icon className="h-4.5 w-4.5" />
-                {item.label}
-              </a>
-            ))}
-          </nav>
+            <div>
+              <div className="text-base font-semibold tracking-tight">
+                NeuroSync
+              </div>
+              <div className="text-xs text-slate-500">
+                Wellness intelligence
+              </div>
+            </div>
+          </div>
 
           <button
             type="button"
-            onClick={handleLogout}
-            className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 transition-colors hover:bg-white/5 hover:text-slate-100"
+            className="rounded-lg p-2 text-slate-400 hover:bg-white/5 hover:text-slate-100 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
-            <IconLogout className="h-4.5 w-4.5" />
-            Sign out
+            <IconClose />
           </button>
-        </aside>
+        </div>
 
-        {sidebarOpen && (
-          <div className="fixed inset-0 z-50 flex lg:hidden">
-            <div
-              className="absolute inset-0 bg-black/60"
-              onClick={() => setSidebarOpen(false)}
-            />
+        <nav className="mt-10 space-y-1">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const active = item.path === "/dashboard";
 
-            <aside className="relative flex h-full w-64 flex-col border-r border-white/10 bg-slate-950 px-5 py-6">
+            return (
+              <button
+                key={item.path}
+                type="button"
+                onClick={() => {
+                  setSidebarOpen(false);
+                  navigate(item.path);
+                }}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors ${
+                  active
+                    ? "bg-white/10 text-slate-100"
+                    : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
+                }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="mt-auto">
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-400 transition-colors hover:bg-rose-400/10 hover:text-rose-300"
+          >
+            <IconLogout className="h-5 w-5" />
+            <span>Sign out</span>
+          </button>
+        </div>
+      </aside>
+
+      <div className="lg:pl-72">
+        <header className="sticky top-0 z-30 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+          <div className="flex h-20 items-center justify-between px-6 lg:px-8">
+            <div className="flex items-center gap-4">
+              <button
+                type="button"
+                className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-300 hover:bg-white/10 lg:hidden"
+                onClick={() => setSidebarOpen(true)}
+                aria-label="Open sidebar"
+              >
+                <IconMenu />
+              </button>
+
+              <div>
+                <p className="text-sm text-slate-500">{greeting}</p>
+
+                <h1 className="text-lg font-semibold text-slate-100">
+                  {user?.first_name || user?.username || "Welcome back"}
+                </h1>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                className="relative rounded-xl border border-white/10 bg-white/5 p-2.5 text-slate-400 hover:bg-white/10 hover:text-slate-100"
+                aria-label="Notifications"
+              >
+                <IconBell className="h-5 w-5" />
+                <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-emerald-400" />
+              </button>
+
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-400 text-sm font-bold text-slate-950">
+                {userInitial}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <main className="mx-auto max-w-6xl px-6 py-8">
+          <div className="grid gap-5 lg:grid-cols-5">
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8 lg:col-span-2">
               <div className="flex items-center justify-between">
-                <a
-                  href="/dashboard"
-                  className="flex items-center gap-2.5"
-                >
-                  <IconMark className="h-8 w-8" />
+                <span className="text-sm text-slate-400">
+                  Overall wellness index
+                </span>
 
-                  <span
-                    style={displayFont}
-                    className="text-lg font-semibold tracking-tight"
-                  >
-                    NeuroSync
+                {latestAssessment && (
+                  <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
+                    Latest check-in
                   </span>
-                </a>
+                )}
+              </div>
+
+              <div className="flex flex-col items-center">
+                <svg
+                  viewBox="0 0 200 120"
+                  className="w-full max-w-[220px]"
+                >
+                  <defs>
+                    <linearGradient
+                      id="gaugeGradDash"
+                      x1="20"
+                      y1="0"
+                      x2="180"
+                      y2="0"
+                      gradientUnits="userSpaceOnUse"
+                    >
+                      <stop offset="0%" stopColor="#fb7185" />
+                      <stop offset="50%" stopColor="#fbbf24" />
+                      <stop offset="100%" stopColor="#34d399" />
+                    </linearGradient>
+                  </defs>
+
+                  <path
+                    d="M20,100 A80,80 0 0 1 180,100"
+                    fill="none"
+                    stroke="url(#gaugeGradDash)"
+                    strokeWidth="14"
+                    strokeLinecap="round"
+                  />
+
+                  {latestAssessment && (
+                    <>
+                      <line
+                        x1="100"
+                        y1="100"
+                        x2={needleX}
+                        y2={needleY}
+                        stroke="#f1f5f9"
+                        strokeWidth="3"
+                        strokeLinecap="round"
+                      />
+
+                      <circle
+                        cx="100"
+                        cy="100"
+                        r="5"
+                        fill="#f1f5f9"
+                      />
+                    </>
+                  )}
+                </svg>
+
+                <div className="-mt-2 text-center">
+                  <div
+                    style={monoFont}
+                    className="text-4xl font-semibold text-slate-100"
+                  >
+                    {assessmentLoading
+                      ? "..."
+                      : wellnessScore ?? "--"}
+                  </div>
+
+                  <div className="text-sm text-slate-500">
+                    {latestAssessment
+                      ? "out of 100"
+                      : "complete an assessment"}
+                  </div>
+                </div>
 
                 <button
                   type="button"
-                  onClick={() => setSidebarOpen(false)}
-                  aria-label="Close menu"
-                  className="text-slate-400"
+                  onClick={handleStartAssessment}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-3 text-sm font-semibold text-slate-950 transition-colors hover:bg-emerald-300 focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:ring-offset-2 focus:ring-offset-slate-900"
                 >
-                  <IconClose className="h-5 w-5" />
+                  {latestAssessment
+                    ? "Take New Assessment"
+                    : "Start Assessment"}
+                  <IconArrowRight className="h-4 w-4" />
                 </button>
+
+                <p className="mt-2 text-center text-xs text-slate-500">
+                  Get a fresh snapshot of your current wellness.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-3">
+              {assessmentLoading ? (
+                <div className="sm:col-span-2 flex min-h-48 items-center justify-center rounded-3xl border border-white/10 bg-slate-900">
+                  <p className="text-sm text-slate-500">
+                    Loading your latest wellness indicators...
+                  </p>
+                </div>
+              ) : metrics.length === 0 ? (
+                <div className="sm:col-span-2 flex min-h-48 flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 bg-slate-900 p-6 text-center">
+                  <p className="text-sm font-medium text-slate-300">
+                    No completed assessment yet
+                  </p>
+
+                  <p className="mt-2 max-w-md text-xs leading-5 text-slate-500">
+                    Complete your first wellness check-in to generate your
+                    personalized indicators.
+                  </p>
+                </div>
+              ) : (
+                metrics.map((metric) => {
+                  const styles = accent[metric.accent];
+                  const Icon = metric.icon;
+
+                  return (
+                    <div
+                      key={metric.label}
+                      className="rounded-3xl border border-white/10 bg-slate-900 p-5"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div
+                          className={`flex h-10 w-10 items-center justify-center rounded-xl ${styles.iconBg} ${styles.iconText}`}
+                        >
+                          <Icon className="h-5 w-5" />
+                        </div>
+
+                        <span
+                          className={`rounded-full px-2 py-1 text-xs font-medium ${styles.badgeBg} ${styles.badgeText}`}
+                        >
+                          {metric.unit}
+                        </span>
+                      </div>
+
+                      <div className="mt-5">
+                        <p className="text-sm text-slate-500">
+                          {metric.label}
+                        </p>
+
+                        <div className="mt-1 flex items-end gap-2">
+                          <span
+                            style={monoFont}
+                            className="text-3xl font-semibold text-slate-100"
+                          >
+                            {metric.value ?? "--"}
+                          </span>
+
+                          <span className="pb-1 text-xs uppercase tracking-wider text-slate-500">
+                            / 100
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-800">
+                        <div
+                          className={`h-full rounded-full ${styles.bar}`}
+                          style={{
+                            width: `${Math.max(
+                              0,
+                              Math.min(100, metric.value ?? 0)
+                            )}%`,
+                          }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {assessmentError && (
+            <div className="mt-5 rounded-2xl border border-rose-400/20 bg-rose-400/5 px-4 py-3 text-sm text-rose-300">
+              {assessmentError}
+            </div>
+          )}
+
+          <div className="mt-5 grid gap-5 lg:grid-cols-3">
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    Live signal read
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Camera-based wellness signal
+                  </p>
+                </div>
+
+                <div
+                  className={`h-2.5 w-2.5 rounded-full ${
+                    cameraActive ? "bg-emerald-400" : "bg-slate-600"
+                  }`}
+                />
               </div>
 
-              <nav className="mt-10 flex flex-1 flex-col gap-1">
-                {navItems.map((item) => (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setSidebarOpen(false)}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
-                      item.active
-                        ? "bg-white/5 text-slate-100"
-                        : "text-slate-400 hover:bg-white/5 hover:text-slate-100"
-                    }`}
-                  >
-                    <item.icon className="h-4.5 w-4.5" />
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
+              <div className="mt-5 flex items-center gap-4">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-400">
+                  <IconCamera className="h-7 w-7" />
+                </div>
+
+                <div>
+                  <p className="text-lg font-semibold text-slate-100">
+                    {cameraActive ? "Active" : "Paused"}
+                  </p>
+
+                  <p className="text-xs text-slate-500">
+                    {cameraActive
+                      ? "Signal monitoring is ready"
+                      : "Camera monitoring is paused"}
+                  </p>
+                </div>
+              </div>
 
               <button
                 type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-400 hover:bg-white/5 hover:text-slate-100"
+                onClick={() => setCameraActive((current) => !current)}
+                className="mt-5 w-full rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5"
               >
-                <IconLogout className="h-4.5 w-4.5" />
-                Sign out
+                {cameraActive ? "Pause signal" : "Activate signal"}
               </button>
-            </aside>
-          </div>
-        )}
+            </div>
 
-        <div className="min-w-0 flex-1">
-          <header className="sticky top-0 z-40 border-b border-white/10 bg-slate-950/90 px-6 py-4 backdrop-blur">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={() => setSidebarOpen(true)}
-                  className="text-slate-300 lg:hidden"
-                  aria-label="Open menu"
-                >
-                  <IconMenu className="h-6 w-6" />
-                </button>
-
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6">
+              <div className="flex items-center justify-between">
                 <div>
-                  <h1
-                    style={displayFont}
-                    className="text-xl font-semibold tracking-tight text-slate-100 sm:text-2xl"
-                  >
-                    {greeting},{" "}
-                    {loading ? "..." : user?.username || "User"}
-                  </h1>
-
-                  <p className="text-sm text-slate-500">
-                    Here's where things stand today.
+                  <p className="text-sm font-medium text-slate-200">
+                    Wearable
+                  </p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Health data synchronization
                   </p>
                 </div>
+
+                <IconWatch className="h-5 w-5 text-violet-400" />
               </div>
 
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  className="relative text-slate-400 transition-colors hover:text-slate-100"
-                  aria-label="Notifications"
+              <div className="mt-5 flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    {wearableConnected ? "Connected" : "Disconnected"}
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    {wearableConnected
+                      ? "Last synced recently"
+                      : "Connect a supported device"}
+                  </p>
+                </div>
+
+                <span
+                  className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                    wearableConnected
+                      ? "bg-emerald-400/10 text-emerald-400"
+                      : "bg-slate-800 text-slate-400"
+                  }`}
                 >
-                  <IconBell className="h-5 w-5" />
-
-                  {alerts.length > 0 && (
-                    <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-400 text-[10px] font-semibold text-slate-950">
-                      {alerts.length}
-                    </span>
-                  )}
-                </button>
-
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-400/10 text-sm font-semibold text-violet-300">
-                  {userInitial}
-                </div>
+                  {wearableConnected ? "Online" : "Offline"}
+                </span>
               </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setWearableConnected((current) => !current)
+                }
+                className="mt-5 w-full rounded-xl border border-white/10 px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5"
+              >
+                {wearableConnected
+                  ? "Disconnect"
+                  : "Connect wearable"}
+              </button>
             </div>
-          </header>
 
-          <main className="mx-auto max-w-6xl px-6 py-8">
-            <div className="grid gap-5 lg:grid-cols-5">
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-8 lg:col-span-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-400">
-                    Overall wellness index
-                  </span>
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6">
+              <div>
+                <p className="text-sm font-medium text-slate-200">
+                  Mood check-in
+                </p>
 
-                  <span className="rounded-full bg-emerald-400/10 px-2.5 py-1 text-xs font-medium text-emerald-400">
-                    +6 this week
-                  </span>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <svg
-                    viewBox="0 0 200 120"
-                    className="w-full max-w-[220px]"
-                  >
-                    <defs>
-                      <linearGradient
-                        id="gaugeGradDash"
-                        x1="20"
-                        y1="0"
-                        x2="180"
-                        y2="0"
-                        gradientUnits="userSpaceOnUse"
-                      >
-                        <stop offset="0%" stopColor="#fb7185" />
-                        <stop offset="50%" stopColor="#fbbf24" />
-                        <stop offset="100%" stopColor="#34d399" />
-                      </linearGradient>
-                    </defs>
-
-                    <path
-                      d="M20,100 A80,80 0 0 1 180,100"
-                      fill="none"
-                      stroke="url(#gaugeGradDash)"
-                      strokeWidth="14"
-                      strokeLinecap="round"
-                    />
-
-                    <line
-                      x1="100"
-                      y1="100"
-                      x2={needleX}
-                      y2={needleY}
-                      stroke="#f1f5f9"
-                      strokeWidth="3"
-                      strokeLinecap="round"
-                    />
-
-                    <circle
-                      cx="100"
-                      cy="100"
-                      r="5"
-                      fill="#f1f5f9"
-                    />
-                  </svg>
-
-                  <div className="-mt-2 text-center">
-                    <div
-                      style={monoFont}
-                      className="text-4xl font-semibold text-slate-100"
-                    >
-                      {wellnessScore}
-                    </div>
-
-                    <div className="text-sm text-slate-500">
-                      out of 100
-                    </div>
-                  </div>
-                </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  How are you feeling right now?
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-3">
-                {initialMetrics.map((metric) => (
-                  <div
-                    key={metric.key}
-                    className="rounded-2xl border border-white/10 bg-slate-900 p-5"
+              <div className="mt-5 grid grid-cols-5 gap-2">
+                {[
+                  { value: "great", emoji: "😄" },
+                  { value: "good", emoji: "🙂" },
+                  { value: "okay", emoji: "😐" },
+                  { value: "low", emoji: "🙁" },
+                  { value: "bad", emoji: "😞" },
+                ].map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    onClick={() => setMood(item.value)}
+                    className={`flex h-11 items-center justify-center rounded-xl border text-lg transition ${
+                      mood === item.value
+                        ? "border-emerald-400/50 bg-emerald-400/10"
+                        : "border-white/10 bg-slate-950/40 hover:bg-white/5"
+                    }`}
+                    aria-label={item.value}
                   >
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-400">
-                        {metric.label}
-                      </span>
-
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-xs font-medium ${metric.color.badgeBg} ${metric.color.badgeText}`}
-                      >
-                        {metric.tag}
-                      </span>
-                    </div>
-
-                    <div className="mt-3 flex items-end justify-between">
-                      <span
-                        style={monoFont}
-                        className="text-3xl font-semibold text-slate-100"
-                      >
-                        {metric.value}
-                      </span>
-
-                      <span
-                        className={`text-xs font-medium ${
-                          metric.delta >= 0
-                            ? "text-emerald-400"
-                            : "text-rose-400"
-                        }`}
-                      >
-                        {metric.delta >= 0 ? "▲" : "▼"}{" "}
-                        {Math.abs(metric.delta)} vs last week
-                      </span>
-                    </div>
-
-                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
-                      <div
-                        className={`h-full rounded-full ${metric.color.bar}`}
-                        style={{ width: `${metric.value}%` }}
-                      />
-                    </div>
-                  </div>
+                    {item.emoji}
+                  </button>
                 ))}
               </div>
+
+              <p className="mt-4 text-xs text-slate-500">
+                {mood
+                  ? `Selected mood: ${mood}`
+                  : "Your check-in helps personalize recommendations."}
+              </p>
             </div>
+          </div>
 
-            <div className="mt-5 grid gap-5 lg:grid-cols-5">
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-2">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-semibold text-slate-100">
-                    Live signal read
-                  </h2>
-
-                  {cameraActive && (
-                    <span className="flex items-center gap-2 text-xs font-medium text-emerald-400">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                      recording
-                    </span>
-                  )}
-                </div>
-
-                <div className="mt-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`flex h-9 w-9 items-center justify-center rounded-lg ${accent.violet.iconBg} ${accent.violet.iconText}`}
-                    >
-                      <IconCamera className="h-4.5 w-4.5" />
-                    </span>
-
-                    <div>
-                      <div className="text-sm font-medium text-slate-100">
-                        Webcam
-                      </div>
-
-                      <div className="text-xs text-slate-500">
-                        {cameraActive
-                          ? "Reading expression & blink rate"
-                          : "Paused"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setCameraActive((value) => !value)}
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                      cameraActive
-                        ? "bg-white/10 text-slate-200 hover:bg-white/15"
-                        : "bg-emerald-400 text-slate-950 hover:bg-emerald-300"
-                    }`}
-                  >
-                    {cameraActive ? "Pause" : "Start"}
-                  </button>
-                </div>
-
-                <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`flex h-9 w-9 items-center justify-center rounded-lg ${accent.emerald.iconBg} ${accent.emerald.iconText}`}
-                    >
-                      <IconWatch className="h-4.5 w-4.5" />
-                    </span>
-
-                    <div>
-                      <div className="text-sm font-medium text-slate-100">
-                        Wearable
-                      </div>
-
-                      <div className="text-xs text-slate-500">
-                        {wearableConnected
-                          ? "Synced 12 minutes ago"
-                          : "Not connected"}
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setWearableConnected((value) => !value)
-                    }
-                    className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                      wearableConnected
-                        ? "bg-white/10 text-slate-200 hover:bg-white/15"
-                        : "bg-emerald-400 text-slate-950 hover:bg-emerald-300"
-                    }`}
-                  >
-                    {wearableConnected ? "Disconnect" : "Connect"}
-                  </button>
-                </div>
-
-                <div className="mt-5">
-                  <div className="text-sm font-medium text-slate-100">
-                    How are you feeling right now?
-                  </div>
-
-                  <div className="mt-2.5 flex flex-wrap gap-2">
-                    {["Great", "Okay", "Tired", "Stressed"].map(
-                      (moodOption) => (
-                        <button
-                          type="button"
-                          key={moodOption}
-                          onClick={() => setMood(moodOption)}
-                          className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors ${
-                            mood === moodOption
-                              ? "border-emerald-400 bg-emerald-400/10 text-emerald-400"
-                              : "border-white/10 text-slate-300 hover:border-white/20"
-                          }`}
-                        >
-                          {moodOption}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-3">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base font-semibold text-slate-100">
-                    7-day wellness trend
-                  </h2>
-
-                  <span className="text-xs text-slate-500">
-                    Mon – Sun
-                  </span>
-                </div>
-
-                <svg
-                  viewBox="0 0 400 130"
-                  className="mt-4 w-full"
-                >
-                  <line
-                    x1="0"
-                    y1="110"
-                    x2="400"
-                    y2="110"
-                    stroke="#ffffff14"
-                    strokeWidth="1"
-                  />
-
-                  <path
-                    d={trendPath}
-                    fill="none"
-                    stroke="#34d399"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-
-                  {trendPoints.map(([x, y], index) => (
-                    <circle
-                      key={index}
-                      cx={x}
-                      cy={y}
-                      r={
-                        index === trendPoints.length - 1
-                          ? 4
-                          : 2.5
-                      }
-                      fill={
-                        index === trendPoints.length - 1
-                          ? "#34d399"
-                          : "#6ee7b7"
-                      }
-                    />
-                  ))}
-                </svg>
-
-                <div className="mt-1 flex justify-between text-xs text-slate-500">
-                  {weekLabels.map((day) => (
-                    <span key={day}>{day}</span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 grid gap-5 lg:grid-cols-5">
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-3">
-                <h2 className="text-base font-semibold text-slate-100">
-                  Suggested for you
-                </h2>
-
-                {recommendations.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-500">
-                    You're all caught up — new suggestions will show up here.
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    Wellness history
                   </p>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    Historical trends will appear as more assessments are
+                    completed.
+                  </p>
+                </div>
+
+                <span className="rounded-full bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-500">
+                  Building history
+                </span>
+              </div>
+
+              <div className="mt-6 flex min-h-44 items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/30 p-6 text-center">
+                <div>
+                  <IconTrend className="mx-auto h-7 w-7 text-slate-600" />
+
+                  <p className="mt-3 text-sm text-slate-400">
+                    Complete more assessments to see your wellness trend.
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-600">
+                    NeuroSync will use your completed check-ins to build a
+                    meaningful history.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    Suggested for you
+                  </p>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    Small actions to support your current wellness.
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {recommendations.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center">
+                    <p className="text-sm text-slate-400">
+                      You are all caught up.
+                    </p>
+
+                    <p className="mt-1 text-xs text-slate-600">
+                      New recommendations will appear here.
+                    </p>
+                  </div>
                 ) : (
-                  <ul className="mt-4 space-y-3">
-                    {recommendations.map((recommendation) => (
-                      <li
+                  recommendations.map((recommendation) => {
+                    const styles = accent[recommendation.accent];
+
+                    return (
+                      <div
                         key={recommendation.id}
-                        className="flex items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                        className="flex gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4"
                       >
-                        <div className="flex items-center gap-3">
-                          <span className="flex h-7 w-7 flex-none items-center justify-center rounded-full bg-emerald-400/10 text-emerald-400">
-                            <IconCheck className="h-3.5 w-3.5" />
-                          </span>
+                        <div
+                          className={`mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${styles.iconBg} ${styles.iconText}`}
+                        >
+                          <IconPulseLine className="h-4 w-4" />
+                        </div>
 
-                          <div>
-                            <div className="text-sm text-slate-100">
-                              {recommendation.text}
-                            </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-slate-200">
+                            {recommendation.title}
+                          </p>
 
-                            <div className="text-xs text-slate-500">
-                              {recommendation.tag}
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                            {recommendation.description}
+                          </p>
                         </div>
 
                         <button
                           type="button"
                           onClick={() =>
-                            dismissRecommendation(
-                              recommendation.id
-                            )
+                            dismissRecommendation(recommendation.id)
                           }
-                          className="text-slate-500 hover:text-slate-200"
-                          aria-label="Dismiss"
+                          className="self-start rounded-lg p-1 text-slate-600 hover:bg-white/5 hover:text-slate-300"
+                          aria-label={`Dismiss ${recommendation.title}`}
                         >
                           <IconX className="h-4 w-4" />
                         </button>
-                      </li>
-                    ))}
-                  </ul>
+                      </div>
+                    );
+                  })
                 )}
               </div>
+            </div>
+          </div>
 
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-2">
-                <h2 className="text-base font-semibold text-slate-100">
-                  Alerts
-                </h2>
-
-                {alerts.length === 0 ? (
-                  <p className="mt-4 text-sm text-slate-500">
-                    No active alerts right now.
+          <div className="mt-5 grid gap-5 lg:grid-cols-2">
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-slate-200">
+                    Alerts
                   </p>
+
+                  <p className="mt-1 text-xs text-slate-500">
+                    Important updates from your wellness data
+                  </p>
+                </div>
+
+                <IconBell className="h-5 w-5 text-slate-500" />
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {alerts.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-white/10 p-5 text-center">
+                    <IconCheck className="mx-auto h-5 w-5 text-emerald-400" />
+
+                    <p className="mt-2 text-sm text-slate-400">
+                      No active alerts.
+                    </p>
+                  </div>
                 ) : (
-                  <ul className="mt-4 space-y-3">
-                    {alerts.map((alert) => {
-                      const color =
-                        accent[alert.level] || accent.violet;
+                  alerts.map((alert) => {
+                    const alertStyles = {
+                      warning: {
+                        icon: IconAlert,
+                        bg: "bg-amber-400/10",
+                        text: "text-amber-400",
+                      },
+                      success: {
+                        icon: IconCheck,
+                        bg: "bg-emerald-400/10",
+                        text: "text-emerald-400",
+                      },
+                      info: {
+                        icon: IconBell,
+                        bg: "bg-violet-400/10",
+                        text: "text-violet-400",
+                      },
+                    };
 
-                      return (
-                        <li
-                          key={alert.id}
-                          className="flex items-start justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                    const styles = alertStyles[alert.type];
+                    const AlertIcon = styles.icon;
+
+                    return (
+                      <div
+                        key={alert.id}
+                        className="flex gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+                      >
+                        <div
+                          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${styles.bg} ${styles.text}`}
                         >
-                          <div className="flex items-start gap-3">
-                            <span
-                              className={`mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full ${color.iconBg} ${color.iconText}`}
-                            >
-                              <IconAlert className="h-3.5 w-3.5" />
-                            </span>
+                          <AlertIcon className="h-4 w-4" />
+                        </div>
 
-                            <div>
-                              <div className="text-sm text-slate-100">
-                                {alert.text}
-                              </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-slate-200">
+                            {alert.title}
+                          </p>
 
-                              <div className="text-xs text-slate-500">
-                                {alert.time}
-                              </div>
-                            </div>
-                          </div>
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+                            {alert.description}
+                          </p>
+                        </div>
 
-                          <button
-                            type="button"
-                            onClick={() => dismissAlert(alert.id)}
-                            className="text-slate-500 hover:text-slate-200"
-                            aria-label="Dismiss"
-                          >
-                            <IconX className="h-4 w-4" />
-                          </button>
-                        </li>
-                      );
-                    })}
-                  </ul>
+                        <button
+                          type="button"
+                          onClick={() => dismissAlert(alert.id)}
+                          className="self-start rounded-lg p-1 text-slate-600 hover:bg-white/5 hover:text-slate-300"
+                          aria-label={`Dismiss ${alert.title}`}
+                        >
+                          <IconX className="h-4 w-4" />
+                        </button>
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>
 
-            <div className="mt-5 grid gap-5 lg:grid-cols-5">
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`flex h-8 w-8 items-center justify-center rounded-lg ${accent.amber.iconBg} ${accent.amber.iconText}`}
-                  >
-                    <IconScan className="h-4 w-4" />
-                  </span>
+            <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
+              <div>
+                <p className="text-sm font-medium text-slate-200">
+                  Medical scan
+                </p>
 
-                  <h2 className="text-base font-semibold text-slate-100">
-                    Medical scan (assistive)
-                  </h2>
-                </div>
-
-                <label
-                  htmlFor="scan-upload"
-                  className="mt-4 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/[0.02] px-4 py-8 text-center transition-colors hover:border-white/25"
-                >
-                  <IconUpload className="h-5 w-5 text-slate-400" />
-
-                  <span className="text-sm text-slate-300">
-                    {scanFile
-                      ? "Replace file"
-                      : "Upload an X-ray, CT, or MRI"}
-                  </span>
-
-                  <span className="text-xs text-slate-500">
-                    PNG, JPG, or DICOM
-                  </span>
-
-                  <input
-                    id="scan-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleScanChange}
-                  />
-                </label>
-
-                {scanFile && (
-                  <div className="mt-3 flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm text-slate-200">
-                    <IconFile className="h-4 w-4 flex-none text-slate-400" />
-
-                    <span className="truncate">{scanFile}</span>
-                  </div>
-                )}
-
-                <p className="mt-4 text-xs leading-relaxed text-slate-500">
-                  Preliminary findings only — always a starting point for a
-                  professional, never a diagnosis.
+                <p className="mt-1 text-xs text-slate-500">
+                  Upload a report or scan for your NeuroSync record.
                 </p>
               </div>
 
-              <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 lg:col-span-3">
-                <h2 className="text-base font-semibold text-slate-100">
-                  Recent activity
-                </h2>
+              <label className="mt-5 flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-slate-950/40 px-6 py-8 text-center transition hover:border-emerald-400/30 hover:bg-white/[0.02]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-400/10 text-emerald-400">
+                  <IconUpload className="h-6 w-6" />
+                </div>
 
-                <ul className="mt-4 divide-y divide-white/5">
-                  {activityLog.map((activity) => (
-                    <li
-                      key={activity.id}
-                      className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0"
-                    >
-                      <div>
-                        <div className="text-sm text-slate-100">
-                          {activity.label}
-                        </div>
+                <p className="mt-4 text-sm font-medium text-slate-200">
+                  {scanFile ? scanFile.name : "Choose a medical file"}
+                </p>
 
-                        <div className="text-xs text-slate-500">
-                          {activity.detail}
-                        </div>
-                      </div>
+                <p className="mt-1 text-xs text-slate-500">
+                  PDF, JPG or PNG
+                </p>
 
-                      <span
-                        style={monoFont}
-                        className="flex-none text-xs text-slate-500"
-                      >
-                        {activity.time}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="hidden"
+                  onChange={handleScanChange}
+                />
+              </label>
+
+              {scanFile && (
+                <div className="mt-4 flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/50 px-4 py-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <IconFile className="h-5 w-5 shrink-0 text-slate-500" />
+
+                    <div className="min-w-0">
+                      <p className="truncate text-xs font-medium text-slate-300">
+                        {scanFile.name}
+                      </p>
+
+                      <p className="text-[11px] text-slate-600">
+                        {(scanFile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setScanFile(null)}
+                    className="rounded-lg p-1.5 text-slate-500 hover:bg-white/5 hover:text-slate-200"
+                    aria-label="Remove selected file"
+                  >
+                    <IconX className="h-4 w-4" />
+                  </button>
+                </div>
+              )}
             </div>
-          </main>
-        </div>
+          </div>
+
+          <div className="mt-5 rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-200">
+                  Recent activity
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Your latest NeuroSync interactions
+                </p>
+              </div>
+
+              <IconTrend className="h-5 w-5 text-slate-500" />
+            </div>
+
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {activityLog.map((activity) => {
+                const ActivityIcon = activity.icon;
+
+                return (
+                  <div
+                    key={activity.id}
+                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/40 p-4"
+                  >
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/5 text-slate-400">
+                      <ActivityIcon className="h-5 w-5" />
+                    </div>
+
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-slate-300">
+                        {activity.title}
+                      </p>
+
+                      <p className="mt-1 text-xs text-slate-600">
+                        {activity.time}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </main>
       </div>
     </div>
   );
 }
+
+export default Dashboard;

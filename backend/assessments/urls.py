@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     AssessmentSessionListCreateView,
     AssessmentSessionDetailView,
+    AssessmentCompleteView,
     AssessmentInputListCreateView,
     AssessmentInputDetailView,
 )
@@ -18,6 +19,11 @@ urlpatterns = [
         "<int:pk>/",
         AssessmentSessionDetailView.as_view(),
         name="assessment-detail",
+    ),
+    path(
+        "<int:assessment_id>/complete/",
+        AssessmentCompleteView.as_view(),
+        name="assessment-complete",
     ),
     path(
         "<int:assessment_id>/inputs/",

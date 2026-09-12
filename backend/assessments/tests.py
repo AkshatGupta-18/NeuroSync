@@ -8,6 +8,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from .models import AssessmentInput, AssessmentSession
+from .scoring import get_all_question_ids
 
 
 class MediaTestMixin:
@@ -127,6 +128,24 @@ class AssessmentSessionAPITests(APITestCase):
         )
 
         self.list_url = "/api/assessments/"
+
+    def create_complete_responses(self, value=3):
+        return {
+            question_id: value
+            for question_id in get_all_question_ids()
+        }
+
+    def create_cognitive_input(self, assessment, responses=None):
+        if responses is None:
+            responses = self.create_complete_responses()
+
+        return AssessmentInput.objects.create(
+            assessment=assessment,
+            input_type=AssessmentInput.InputType.COGNITIVE,
+            metadata={
+                "responses": responses,
+            },
+        )
 
     def test_unauthenticated_user_cannot_access_assessments(self):
         response = self.client.get(self.list_url)
@@ -310,6 +329,341 @@ class AssessmentSessionAPITests(APITestCase):
         self.assertIn(
             "detail",
             response.data,
+        )
+
+    def test_authenticated_user_can_complete_assessment(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.create_cognitive_input(assessment)
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data["status"],
+            "completed",
+        )
+
+        self.assertEqual(
+            response.data["stress_score"],
+            "50.00",
+        )
+
+        self.assertEqual(
+            response.data["fatigue_score"],
+            "50.00",
+        )
+
+        self.assertEqual(
+            response.data["mental_fitness_score"],
+            "50.00",
+        )
+
+        self.assertEqual(
+            response.data["cognitive_fitness_score"],
+            "50.00",
+        )
+
+        assessment.refresh_from_db()
+
+        self.assertEqual(
+            assessment.status,
+            AssessmentSession.Status.COMPLETED,
+        )
+
+        self.assertEqual(
+            assessment.stress_score,
+            50,
+        )
+
+        self.assertEqual(
+            assessment.fatigue_score,
+            50,
+        )
+
+        self.assertEqual(
+            assessment.mental_fitness_score,
+            50,
+        )
+
+        self.assertEqual(
+            assessment.cognitive_fitness_score,
+            50,
+        )
+
+        self.assertIsNotNone(
+            assessment.completed_at,
+        )
+
+    def test_completion_calculates_different_scores(self):
+        responses = self.create_complete_responses(value=3)
+
+        responses.update(
+            {
+                "focus": 5,
+                "clarity": 5,
+                "task_completion": 5,
+                "stress_worry": 1,
+                "stress_pressure": 1,
+                "stress_relax": 1,
+                "stress_upset": 1,
+            }
+        )
+
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.create_cognitive_input(
+            assessment,
+            responses,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data["stress_score"],
+            "100.00",
+        )
+
+        self.assertEqual(
+            response.data["cognitive_fitness_score"],
+            "87.50",
+        )
+
+    def test_completion_requires_cognitive_input(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "detail",
+            response.data,
+        )
+
+        assessment.refresh_from_db()
+
+        self.assertEqual(
+            assessment.status,
+            AssessmentSession.Status.CREATED,
+        )
+
+    def test_completion_rejects_missing_responses(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        responses = self.create_complete_responses()
+
+        responses.pop("focus")
+
+        self.create_cognitive_input(
+            assessment,
+            responses,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "Missing responses",
+            response.data["detail"],
+        )
+
+        assessment.refresh_from_db()
+
+        self.assertEqual(
+            assessment.status,
+            AssessmentSession.Status.CREATED,
+        )
+
+        self.assertIsNone(
+            assessment.stress_score,
+        )
+
+    def test_completion_rejects_invalid_response_value(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        responses = self.create_complete_responses()
+
+        responses["focus"] = 6
+
+        self.create_cognitive_input(
+            assessment,
+            responses,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "must be between 1 and 5",
+            response.data["detail"],
+        )
+
+    def test_completion_rejects_unknown_question_id(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        responses = self.create_complete_responses()
+
+        responses["unknown_question"] = 3
+
+        self.create_cognitive_input(
+            assessment,
+            responses,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "Unknown question IDs",
+            response.data["detail"],
+        )
+
+    def test_completed_assessment_cannot_be_completed_again(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user,
+            status=AssessmentSession.Status.COMPLETED,
+            stress_score=50,
+            fatigue_score=50,
+            mental_fitness_score=50,
+            cognitive_fitness_score=50,
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "already been completed",
+            response.data["detail"],
+        )
+
+    def test_user_cannot_complete_another_users_assessment(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.create_cognitive_input(assessment)
+
+        self.client.force_authenticate(
+            user=self.other_user
+        )
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
+        assessment.refresh_from_db()
+
+        self.assertEqual(
+            assessment.status,
+            AssessmentSession.Status.CREATED,
+        )
+
+    def test_unauthenticated_user_cannot_complete_assessment(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.create_cognitive_input(assessment)
+
+        response = self.client.post(
+            f"{self.list_url}{assessment.id}/complete/",
+            {},
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
         )
 
 
