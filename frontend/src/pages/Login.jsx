@@ -1,3 +1,4 @@
+import { saveTokens } from "../services/auth";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 /* ---------------------------------------------------------
@@ -75,8 +76,7 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Login successful:", data);
-        localStorage.setItem("access_token", data.access);
+        saveTokens(data.access, data.refresh);
         navigate('/dashboard')
       } else {
         console.log("Login failed:", data);
