@@ -666,6 +666,124 @@ class AssessmentSessionAPITests(APITestCase):
             status.HTTP_401_UNAUTHORIZED,
         )
 
+    def test_unauthenticated_user_cannot_access_interpretation(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user,
+            status=AssessmentSession.Status.COMPLETED,
+            stress_score=50,
+            fatigue_score=50,
+            mental_fitness_score=50,
+            cognitive_fitness_score=50,
+        )
+
+        response = self.client.get(
+            f"{self.list_url}{assessment.id}/interpretation/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_401_UNAUTHORIZED,
+        )
+
+    def test_user_cannot_access_another_users_interpretation(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user,
+            status=AssessmentSession.Status.COMPLETED,
+            stress_score=50,
+            fatigue_score=50,
+            mental_fitness_score=50,
+            cognitive_fitness_score=50,
+        )
+
+        self.client.force_authenticate(
+            user=self.other_user
+        )
+
+        response = self.client.get(
+            f"{self.list_url}{assessment.id}/interpretation/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    def test_interpretation_requires_completed_assessment(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user
+        )
+
+        self.client.force_authenticate(
+            user=self.user
+        )
+
+        response = self.client.get(
+            f"{self.list_url}{assessment.id}/interpretation/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "completed assessments",
+            response.data["detail"],
+        )
+
+    def test_authenticated_user_can_get_assessment_interpretation(self):
+        assessment = AssessmentSession.objects.create(
+            user=self.user,
+            status=AssessmentSession.Status.COMPLETED,
+            stress_score=50,
+            fatigue_score=37.5,
+            mental_fitness_score=62.5,
+            cognitive_fitness_score=75,
+        )
+
+        self.client.force_authenticate(
+            user=self.user
+        )
+
+        response = self.client.get(
+            f"{self.list_url}{assessment.id}/interpretation/"
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+        )
+
+        self.assertEqual(
+            response.data["assessment_id"],
+            assessment.id,
+        )
+
+        self.assertEqual(
+            response.data["interpretation"]["overall_score"],
+            56.25,
+        )
+
+        self.assertEqual(
+            response.data["interpretation"]["overall_status"],
+            "Developing",
+        )
+
+        self.assertEqual(
+            response.data["interpretation"]["strongest_dimension"]["dimension"],
+            "cognitive_fitness_score",
+        )
+
+        self.assertEqual(
+            response.data["interpretation"]["priority_dimension"]["dimension"],
+            "fatigue_score",
+        )
+
+        self.assertEqual(
+            len(response.data["interpretation"]["dimensions"]),
+            4,
+        )
+
 
 class AssessmentInputAPITests(MediaTestMixin, APITestCase):
 
