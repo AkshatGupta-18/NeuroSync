@@ -22,5 +22,6 @@ frontend/dist/
 # OS
 .DS_Store
 Thumbs.db
-# Uploaded media
-media/
+
+# User-uploaded/generated media
+backend/media/
