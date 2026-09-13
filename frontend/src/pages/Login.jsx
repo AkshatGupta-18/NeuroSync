@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveTokens } from "../services/auth";
+
 /* ---------------------------------------------------------
    NeuroSync — Login
    Styled to match Landing.jsx and Register.jsx
@@ -33,7 +35,6 @@ function Login() {
     password: "",
   });
   const navigate = useNavigate();
-
 
   useEffect(() => {
     if (!document.head.querySelector("[data-neurosync-fonts]")) {
@@ -75,9 +76,8 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        console.log("Login successful:", data);
-        localStorage.setItem("access_token", data.access);
-        navigate('/dashboard')
+        saveTokens(data.access, data.refresh);
+        navigate("/dashboard");
       } else {
         console.log("Login failed:", data);
         alert(data.error || "Invalid username or password");
@@ -96,16 +96,24 @@ function Login() {
       <div className="w-full max-w-lg">
         <a href="/" className="mb-8 flex items-center justify-center gap-2.5">
           <IconMark className="h-8 w-8" />
-          <span style={displayFont} className="text-lg font-semibold tracking-tight">
+          <span
+            style={displayFont}
+            className="text-lg font-semibold tracking-tight"
+          >
             NeuroSync
           </span>
         </a>
 
         <div className="rounded-3xl border border-white/10 bg-slate-900 p-8 sm:p-10">
-          <h1 style={displayFont} className="text-3xl font-semibold tracking-tight text-slate-100">
+          <h1
+            style={displayFont}
+            className="text-3xl font-semibold tracking-tight text-slate-100"
+          >
             Welcome back
           </h1>
-          <p className="mt-2 text-slate-400">Sign in to see where your signals are at.</p>
+          <p className="mt-2 text-slate-400">
+            Sign in to see where your signals are at.
+          </p>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-5">
             <div>
@@ -124,7 +132,10 @@ function Login() {
             <div>
               <div className="flex items-center justify-between">
                 <label className={labelClass}>Password</label>
-                <a href="/forgot-password" className="mb-2 text-xs font-medium text-emerald-400 hover:text-emerald-300">
+                <a
+                  href="/forgot-password"
+                  className="mb-2 text-xs font-medium text-emerald-400 hover:text-emerald-300"
+                >
                   Forgot password?
                 </a>
               </div>
@@ -149,7 +160,10 @@ function Login() {
 
           <p className="mt-7 text-center text-sm text-slate-500">
             Don't have an account?{" "}
-            <a href="/register" className="font-medium text-emerald-400 transition-colors hover:text-emerald-300">
+            <a
+              href="/register"
+              className="font-medium text-emerald-400 transition-colors hover:text-emerald-300"
+            >
               Create one
             </a>
           </p>
