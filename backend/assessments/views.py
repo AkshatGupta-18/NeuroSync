@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -81,40 +82,51 @@ class AssessmentCompleteView(APIView):
             scores = calculate_scores(responses)
         except ValueError as exc:
             return Response(
-                {
-                    "detail": str(exc)
-                },
+                {"detail": str(exc)},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        assessment.status = AssessmentSession.Status.PROCESSING
-        assessment.save(
-            update_fields=["status"]
-        )
+        with transaction.atomic():
+            processing_time = timezone.now()
 
-        assessment.stress_score = scores["stress_score"]
-        assessment.fatigue_score = scores["fatigue_score"]
-        assessment.mental_fitness_score = scores[
-            "mental_fitness_score"
-        ]
-        assessment.cognitive_fitness_score = scores[
-            "cognitive_fitness_score"
-        ]
-        assessment.status = AssessmentSession.Status.COMPLETED
-        assessment.completed_at = timezone.now()
-        assessment.failure_reason = None
+            assessment.status = AssessmentSession.Status.PROCESSING
+            assessment.save(update_fields=["status"])
 
-        assessment.save(
-            update_fields=[
-                "stress_score",
-                "fatigue_score",
-                "mental_fitness_score",
-                "cognitive_fitness_score",
-                "status",
-                "completed_at",
-                "failure_reason",
+            assessment.stress_score = scores["stress_score"]
+            assessment.fatigue_score = scores["fatigue_score"]
+            assessment.mental_fitness_score = scores[
+                "mental_fitness_score"
             ]
-        )
+            assessment.cognitive_fitness_score = scores[
+                "cognitive_fitness_score"
+            ]
+            assessment.status = AssessmentSession.Status.COMPLETED
+            assessment.completed_at = processing_time
+            assessment.failure_reason = None
+
+            assessment.save(
+                update_fields=[
+                    "stress_score",
+                    "fatigue_score",
+                    "mental_fitness_score",
+                    "cognitive_fitness_score",
+                    "status",
+                    "completed_at",
+                    "failure_reason",
+                ]
+            )
+
+            cognitive_input.status = AssessmentInput.Status.PROCESSED
+            cognitive_input.processed_at = processing_time
+            cognitive_input.failure_reason = None
+
+            cognitive_input.save(
+                update_fields=[
+                    "status",
+                    "processed_at",
+                    "failure_reason",
+                ]
+            )
 
         return Response(
             AssessmentSessionSerializer(assessment).data,
