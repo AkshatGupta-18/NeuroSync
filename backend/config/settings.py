@@ -15,6 +15,9 @@ from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
+from datetime import timedelta
+
+
 
 load_dotenv()
 
@@ -37,6 +40,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -52,6 +56,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
+    'reports',
+
 ]
 
 MIDDLEWARE = [
