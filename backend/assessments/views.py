@@ -2,7 +2,7 @@ from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from rest_framework import generics, status
+from rest_framework import generics, serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -191,6 +191,16 @@ class AssessmentInputListCreateView(generics.ListCreateAPIView):
             id=self.kwargs["assessment_id"],
             user=self.request.user,
         )
+
+        if assessment.status == AssessmentSession.Status.COMPLETED:
+            raise serializers.ValidationError(
+                {
+                    "detail": (
+                        "New inputs cannot be added to a completed "
+                        "assessment."
+                    )
+                }
+            )
 
         serializer.save(assessment=assessment)
 

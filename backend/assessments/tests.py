@@ -1102,6 +1102,53 @@ class AssessmentInputAPITests(MediaTestMixin, APITestCase):
             response.data["file"]
         )
 
+    def test_completed_assessment_rejects_new_input(self):
+        self.assessment.status = AssessmentSession.Status.COMPLETED
+        self.assessment.stress_score = 50
+        self.assessment.fatigue_score = 50
+        self.assessment.mental_fitness_score = 50
+        self.assessment.cognitive_fitness_score = 50
+        self.assessment.save(
+            update_fields=[
+                "status",
+                "stress_score",
+                "fatigue_score",
+                "mental_fitness_score",
+                "cognitive_fitness_score",
+            ]
+        )
+
+        self.client.force_authenticate(user=self.user)
+
+        response = self.client.post(
+            self.input_list_url,
+            {
+                "input_type": "cognitive",
+                "metadata": {
+                    "responses": {
+                        "focus": 3,
+                    }
+                },
+            },
+            format="json",
+        )
+
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+        self.assertIn(
+            "New inputs cannot be added to a completed assessment.",
+            response.data["detail"],
+        )
+
+        self.assertFalse(
+            AssessmentInput.objects.filter(
+                assessment=self.assessment,
+            ).exists()
+        )
+
     def test_authenticated_user_can_create_video_input(self):
         self.client.force_authenticate(user=self.user)
 
