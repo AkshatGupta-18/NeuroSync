@@ -65,6 +65,17 @@ Django User + JWT / SimpleJWT
 
 ## 4. Completed Features
 
+### Dashboard
+- [x] Dashboard layout and reusable component architecture
+- [x] Wellness score and assessment metrics
+- [x] Latest completed assessment integration
+- [x] Historical assessment selection
+- [x] Historical wellness insights
+- [x] Historical assessment response review
+- [x] Read-only response review modal
+- [x] Assessment loading, error and empty states
+- [x] Dashboard production build verification
+
 ### Project Setup
 - [x] React + Vite frontend
 - [x] Django backend
@@ -107,41 +118,38 @@ Registration: WORKING
 Login: WORKING  
 JWT generation: IMPLEMENTED  
 Profile API: IMPLEMENTED
+Refresh-token flow: VERIFIED
+Frontend authenticated API integration: IMPLEMENTED
 
-Still needs complete frontend verification:
+Still needs complete regression verification:
 
-- [ ] Access token storage/handling
-- [ ] Authenticated API requests
 - [ ] Protected frontend routes
-- [ ] Post-login redirect
-- [ ] Dashboard
-- [ ] Profile display
-- [ ] Logout
+- [ ] Post-login redirect regression test
+- [ ] Dashboard authentication regression test
+- [ ] Profile display regression test
+- [ ] Logout regression test
 - [ ] Token expiry handling
 - [ ] Invalid-token handling
-- [ ] Refresh-token behavior
 - [ ] Persistence across browser refresh
 - [ ] Authentication negative-case testing
+- [ ] Ownership/isolation testing across protected assessment resources
 
 ---
 
 ## 7. Current Priority
 
-Complete the authenticated post-login experience.
+Complete verification and regression testing of the authenticated dashboard experience.
 
 Planned sequence:
 
-1. Verify token lifecycle.
-2. Implement authenticated API requests.
-3. Implement protected frontend routes.
-4. Implement post-login redirect.
-5. Build dashboard.
-6. Display authenticated user/profile data.
-7. Implement logout.
-8. Handle expired/invalid tokens.
-9. Verify persistence across refresh.
-10. Polish dashboard UI/UX.
-11. Test the complete authentication flow.
+1. Manually verify the complete dashboard flow in the browser.
+2. Verify historical assessment selection against real backend data.
+3. Verify historical wellness interpretation against the selected assessment.
+4. Verify read-only questionnaire response review.
+5. Test authentication and authorization around assessment history and inputs.
+6. Test ownership/isolation and unauthorized access behavior.
+7. Identify the next highest-value product feature from the current architecture.
+8. Continue improving production readiness, accessibility, testing and documentation.
 
 ---
 
@@ -154,7 +162,7 @@ Development branch:
 vishal-development
 
 Latest confirmed commit:
-3bd7b77 - Fix frontend backend authentication integration
+0495f76 - Add historical assessment review to dashboard
 
 Latest confirmed Git status:
 - Branch synced with origin/vishal-development
@@ -178,11 +186,19 @@ Git rules:
 - backend/users/urls.py
 - backend/users/views.py
 - backend/users/serializers.py
+- backend/assessments/
 
 ### Frontend
 - frontend/src/App.jsx
 - frontend/src/pages/Login.jsx
 - frontend/src/pages/Register.jsx
+- frontend/src/pages/Dashboard.jsx
+- frontend/src/components/dashboard/
+- frontend/src/hooks/useDashboardData.js
+- frontend/src/utils/dashboardUtils.js
+
+### Project Documentation
+- NEUROSYNC_STATUS.md
 
 Update this section whenever important files are added or architecture changes.
 
@@ -212,17 +228,33 @@ Currently verified:
 - [x] Registration API integration works
 - [x] Login API integration works
 - [x] JWT generation works
+- [x] Assessment ownership/isolation test coverage exists
+- [x] Assessment test suite previously verified successfully
+- [x] Frontend production build succeeds
+- [x] git diff --check passes
+
+Latest frontend build:
+
+`npm --prefix .\frontend run build`
+
+Result: successful production build.
+
+Latest verified frontend build output:
+- 50 modules transformed
+- Production bundle generated successfully
 
 Still required:
-- [ ] Protected profile request from frontend
+- [ ] Manual dashboard regression testing
+- [ ] Historical assessment flow with real backend data
+- [ ] Historical response review with real backend data
 - [ ] Unauthorized request handling
 - [ ] Invalid credentials
 - [ ] Expired access token
-- [ ] Refresh token flow
+- [ ] Refresh token regression test
 - [ ] Logout
 - [ ] Browser refresh persistence
 - [ ] Protected route access
-- [ ] Complete end-to-end authentication flow
+- [ ] Complete end-to-end authentication regression flow
 
 ---
 
@@ -273,5 +305,16 @@ The project should be understandable and explainable during a final-year viva wh
 Commit:
 3bd7b77 - Fix frontend backend authentication integration
 
+### 2026-10-03
+- Completed historical assessment selection on the dashboard.
+- Added historical wellness interpretation support.
+- Added read-only review of saved assessment responses.
+- Added loading, error and empty-state handling for response review.
+- Verified frontend production build successfully.
+- Committed and pushed the milestone.
+
+Commit:
+0495f76 - Add historical assessment review to dashboard
+
 ### Next Update
-Document the authenticated dashboard/post-login implementation and testing results here.
+Manually verify the complete dashboard history/review flow against real backend data, then continue with authentication/authorization regression testing and the next highest-value product feature.
