@@ -3,6 +3,7 @@ import MedicalScan from "../components/dashboard/MedicalScan";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import WellnessHistory from "../components/dashboard/WellnessHistory";
 import Recommendations from "../components/dashboard/Recommendations";
+import AssessmentReview from "../components/dashboard/AssessmentReview";
 import DashboardSidebar from "../components/dashboard/DashboardSidebar";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
 import WellnessOverview from "../components/dashboard/WellnessOverview";
@@ -11,13 +12,12 @@ import WellnessInsights from "../components/dashboard/WellnessInsights";
 import WearableStatus from "../components/dashboard/WearableStatus";
 import MoodCheckIn from "../components/dashboard/MoodCheckIn";
 import LiveSignals from "../components/dashboard/LiveSignals";
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import useDashboardData from "../hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { clearTokens } from "../services/auth";
 import {
   accent,
-  navItems,
   initialRecommendations,
   initialAlerts,
   activityLog,
@@ -35,16 +35,11 @@ const monoFont = {
 };
 
 import {
-  IconMark,
-  IconMenu,
-  IconClose,
+  IconTrend,
   IconGrid,
   IconPulseLine,
-  IconTrend,
-  IconScan,
   IconCamera,
   IconWatch,
-  IconLogout,
   IconBell,
   IconUpload,
   IconX,
@@ -53,6 +48,7 @@ import {
   IconArrowRight,
   IconFile,
 } from "../components/dashboard/DashboardIcons";
+
 function Dashboard() {
   const navigate = useNavigate();
 
@@ -65,10 +61,20 @@ function Dashboard() {
   const [alerts, setAlerts] = useState(initialAlerts);
   const [scanFile, setScanFile] = useState(null);
   const [mood, setMood] = useState(null);
+
   const {
     user,
     latestAssessment,
     completedAssessments,
+    selectedAssessment,
+    selectedAssessmentId,
+    selectAssessment,
+    reviewAssessment,
+    openReviewResponses,
+    closeReviewResponses,
+    assessmentResponses,
+    responsesLoading,
+    responsesError,
     loading,
     assessmentLoading,
     assessmentError,
@@ -102,7 +108,9 @@ function Dashboard() {
   }, []);
 
   const wellnessScore =
-    interpretation?.overall_score ?? calculateOverallWellness(latestAssessment);
+    interpretation && selectedAssessmentId === latestAssessment?.id
+      ? interpretation.overall_score
+      : calculateOverallWellness(latestAssessment);
 
   const interpretationByDimension = new Map(
     (interpretation?.dimensions || []).map((dimension) => [
@@ -118,8 +126,10 @@ function Dashboard() {
           dimension: "stress_score",
           value: toNumber(latestAssessment.stress_score),
           unit:
-            interpretationByDimension.get("stress_score")?.status ||
-            getScoreLabel(toNumber(latestAssessment.stress_score)),
+            selectedAssessmentId === latestAssessment.id
+              ? interpretationByDimension.get("stress_score")?.status ||
+                getScoreLabel(toNumber(latestAssessment.stress_score))
+              : getScoreLabel(toNumber(latestAssessment.stress_score)),
           accent: "emerald",
           icon: IconPulseLine,
         },
@@ -128,8 +138,10 @@ function Dashboard() {
           dimension: "fatigue_score",
           value: toNumber(latestAssessment.fatigue_score),
           unit:
-            interpretationByDimension.get("fatigue_score")?.status ||
-            getScoreLabel(toNumber(latestAssessment.fatigue_score)),
+            selectedAssessmentId === latestAssessment.id
+              ? interpretationByDimension.get("fatigue_score")?.status ||
+                getScoreLabel(toNumber(latestAssessment.fatigue_score))
+              : getScoreLabel(toNumber(latestAssessment.fatigue_score)),
           accent: "violet",
           icon: IconTrend,
         },
@@ -138,10 +150,15 @@ function Dashboard() {
           dimension: "cognitive_fitness_score",
           value: toNumber(latestAssessment.cognitive_fitness_score),
           unit:
-            interpretationByDimension.get("cognitive_fitness_score")?.status ||
-            getScoreLabel(
-              toNumber(latestAssessment.cognitive_fitness_score)
-            ),
+            selectedAssessmentId === latestAssessment.id
+              ? interpretationByDimension.get("cognitive_fitness_score")
+                  ?.status ||
+                getScoreLabel(
+                  toNumber(latestAssessment.cognitive_fitness_score)
+                )
+              : getScoreLabel(
+                  toNumber(latestAssessment.cognitive_fitness_score)
+                ),
           accent: "amber",
           icon: IconGrid,
         },
@@ -150,10 +167,14 @@ function Dashboard() {
           dimension: "mental_fitness_score",
           value: toNumber(latestAssessment.mental_fitness_score),
           unit:
-            interpretationByDimension.get("mental_fitness_score")?.status ||
-            getScoreLabel(
-              toNumber(latestAssessment.mental_fitness_score)
-            ),
+            selectedAssessmentId === latestAssessment.id
+              ? interpretationByDimension.get("mental_fitness_score")?.status ||
+                getScoreLabel(
+                  toNumber(latestAssessment.mental_fitness_score)
+                )
+              : getScoreLabel(
+                  toNumber(latestAssessment.mental_fitness_score)
+                ),
           accent: "rose",
           icon: IconPulseLine,
         },
@@ -182,11 +203,13 @@ function Dashboard() {
   };
 
   const dismissAlert = (id) => {
-    setAlerts((current) => current.filter((alert) => alert.id !== id));
+    setAlerts((current) =>
+      current.filter((alert) => alert.id !== id)
+    );
   };
 
   const handleScanChange = (event) => {
-    const file = event.target.files?.[0] ?? null;
+    const file = event.target.files?.[0] || null;
     setScanFile(file);
   };
 
@@ -201,6 +224,7 @@ function Dashboard() {
         <div className="flex min-h-screen items-center justify-center">
           <div className="text-center">
             <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-slate-700 border-t-emerald-400" />
+
             <p className="text-sm text-slate-400">
               Loading your NeuroSync dashboard...
             </p>
@@ -221,6 +245,7 @@ function Dashboard() {
         navigate={navigate}
         handleLogout={handleLogout}
       />
+
       <div className="lg:pl-72">
         <DashboardHeader
           greeting={greeting}
@@ -228,6 +253,7 @@ function Dashboard() {
           userInitial={userInitial}
           setSidebarOpen={setSidebarOpen}
         />
+
         <main className="mx-auto max-w-6xl px-6 py-8">
           <div className="grid gap-5 lg:grid-cols-5">
             <WellnessOverview
@@ -247,9 +273,8 @@ function Dashboard() {
               accent={accent}
               monoFont={monoFont}
             />
-
-
           </div>
+
           {assessmentError && (
             <div className="mt-5 rounded-2xl border border-rose-400/20 bg-rose-400/5 px-4 py-3 text-sm text-rose-300">
               {assessmentError}
@@ -257,13 +282,14 @@ function Dashboard() {
           )}
 
           {latestAssessment && (
-          <WellnessInsights
-            latestAssessment={latestAssessment}
-            interpretationLoading={interpretationLoading}
-            interpretationError={interpretationError}
-            interpretation={interpretation}
-            monoFont={monoFont}
-          />
+            <WellnessInsights
+              latestAssessment={latestAssessment}
+              selectedAssessment={selectedAssessment}
+              interpretationLoading={interpretationLoading}
+              interpretationError={interpretationError}
+              interpretation={interpretation}
+              monoFont={monoFont}
+            />
           )}
 
           <div className="mt-5 grid gap-5 lg:grid-cols-3">
@@ -288,6 +314,9 @@ function Dashboard() {
           <div className="mt-5 grid gap-5 lg:grid-cols-2">
             <WellnessHistory
               completedAssessments={completedAssessments}
+              selectedAssessmentId={selectedAssessmentId}
+              onSelectAssessment={selectAssessment}
+              onReviewResponses={openReviewResponses}
               bestWellnessScore={bestWellnessScore}
               calculateOverallWellness={calculateOverallWellness}
               monoFont={monoFont}
@@ -330,6 +359,16 @@ function Dashboard() {
           />
         </main>
       </div>
+
+      {reviewAssessment && (
+        <AssessmentReview
+          assessment={reviewAssessment}
+          assessmentResponses={assessmentResponses}
+          responsesLoading={responsesLoading}
+          responsesError={responsesError}
+          onClose={closeReviewResponses}
+        />
+      )}
     </div>
   );
 }
