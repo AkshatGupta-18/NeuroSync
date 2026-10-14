@@ -1,12 +1,14 @@
+from django.db import transaction
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
-from rest_framework import generics, status
+from rest_framework import generics, serializers, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import AssessmentSession, AssessmentInput
+from .interpretation import interpret_scores
 from .scoring import calculate_scores
 from .serializers import (
     AssessmentSessionSerializer,
@@ -81,43 +83,94 @@ class AssessmentCompleteView(APIView):
             scores = calculate_scores(responses)
         except ValueError as exc:
             return Response(
+                {"detail": str(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            processing_time = timezone.now()
+
+            assessment.status = AssessmentSession.Status.PROCESSING
+            assessment.save(update_fields=["status"])
+
+            assessment.stress_score = scores["stress_score"]
+            assessment.fatigue_score = scores["fatigue_score"]
+            assessment.mental_fitness_score = scores[
+                "mental_fitness_score"
+            ]
+            assessment.cognitive_fitness_score = scores[
+                "cognitive_fitness_score"
+            ]
+            assessment.status = AssessmentSession.Status.COMPLETED
+            assessment.completed_at = processing_time
+            assessment.failure_reason = None
+
+            assessment.save(
+                update_fields=[
+                    "stress_score",
+                    "fatigue_score",
+                    "mental_fitness_score",
+                    "cognitive_fitness_score",
+                    "status",
+                    "completed_at",
+                    "failure_reason",
+                ]
+            )
+
+            cognitive_input.status = AssessmentInput.Status.PROCESSED
+            cognitive_input.processed_at = processing_time
+            cognitive_input.failure_reason = None
+
+            cognitive_input.save(
+                update_fields=[
+                    "status",
+                    "processed_at",
+                    "failure_reason",
+                ]
+            )
+
+        return Response(
+            AssessmentSessionSerializer(assessment).data,
+            status=status.HTTP_200_OK,
+        )
+
+
+class AssessmentInterpretationView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, assessment_id):
+        assessment = get_object_or_404(
+            AssessmentSession,
+            id=assessment_id,
+            user=request.user,
+        )
+
+        if assessment.status != AssessmentSession.Status.COMPLETED:
+            return Response(
                 {
-                    "detail": str(exc)
+                    "detail": (
+                        "Interpretation is available only for "
+                        "completed assessments."
+                    )
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        assessment.status = AssessmentSession.Status.PROCESSING
-        assessment.save(
-            update_fields=["status"]
-        )
+        scores = {
+            "stress_score": assessment.stress_score,
+            "fatigue_score": assessment.fatigue_score,
+            "mental_fitness_score": assessment.mental_fitness_score,
+            "cognitive_fitness_score": assessment.cognitive_fitness_score,
+        }
 
-        assessment.stress_score = scores["stress_score"]
-        assessment.fatigue_score = scores["fatigue_score"]
-        assessment.mental_fitness_score = scores[
-            "mental_fitness_score"
-        ]
-        assessment.cognitive_fitness_score = scores[
-            "cognitive_fitness_score"
-        ]
-        assessment.status = AssessmentSession.Status.COMPLETED
-        assessment.completed_at = timezone.now()
-        assessment.failure_reason = None
-
-        assessment.save(
-            update_fields=[
-                "stress_score",
-                "fatigue_score",
-                "mental_fitness_score",
-                "cognitive_fitness_score",
-                "status",
-                "completed_at",
-                "failure_reason",
-            ]
-        )
+        interpretation = interpret_scores(scores)
 
         return Response(
-            AssessmentSessionSerializer(assessment).data,
+            {
+                "assessment_id": assessment.id,
+                "completed_at": assessment.completed_at,
+                "interpretation": interpretation,
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -138,6 +191,16 @@ class AssessmentInputListCreateView(generics.ListCreateAPIView):
             id=self.kwargs["assessment_id"],
             user=self.request.user,
         )
+
+        if assessment.status == AssessmentSession.Status.COMPLETED:
+            raise serializers.ValidationError(
+                {
+                    "detail": (
+                        "New inputs cannot be added to a completed "
+                        "assessment."
+                    )
+                }
+            )
 
         serializer.save(assessment=assessment)
 

@@ -1,10 +1,11 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./pages/Register";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Success from "./pages/Success";
 import Dashboard from "./pages/Dashboard";
 import Assessment from "./pages/Assessment";
+import AssessmentResult from "./pages/AssessmentResult";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -30,6 +31,15 @@ function App() {
           element={
             <ProtectedRoute>
               <Assessment />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/assessment/:assessmentId/result"
+          element={
+            <ProtectedRoute>
+              <AssessmentResult />
             </ProtectedRoute>
           }
         />

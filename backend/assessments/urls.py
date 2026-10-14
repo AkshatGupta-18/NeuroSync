@@ -4,6 +4,7 @@ from .views import (
     AssessmentSessionListCreateView,
     AssessmentSessionDetailView,
     AssessmentCompleteView,
+    AssessmentInterpretationView,
     AssessmentInputListCreateView,
     AssessmentInputDetailView,
 )
@@ -24,6 +25,11 @@ urlpatterns = [
         "<int:assessment_id>/complete/",
         AssessmentCompleteView.as_view(),
         name="assessment-complete",
+    ),
+    path(
+        "<int:assessment_id>/interpretation/",
+        AssessmentInterpretationView.as_view(),
+        name="assessment-interpretation",
     ),
     path(
         "<int:assessment_id>/inputs/",
