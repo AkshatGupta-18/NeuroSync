@@ -25,10 +25,15 @@ function useDashboardData() {
   const [responsesError, setResponsesError] = useState("");
 
   const selectAssessment = useCallback((assessmentId) => {
+    setInterpretation(null);
+    setInterpretationLoading(false);
+    setInterpretationError("");
     setSelectedAssessmentId(assessmentId);
   }, []);
 
   const openReviewResponses = useCallback((assessmentId) => {
+    setAssessmentResponses(null);
+    setResponsesError("");
     setReviewAssessmentId(assessmentId);
   }, []);
 
@@ -143,10 +148,6 @@ function useDashboardData() {
 
   useEffect(() => {
     if (!selectedAssessmentId) {
-      setInterpretation(null);
-      setInterpretationLoading(false);
-      setInterpretationError("");
-
       return undefined;
     }
 
@@ -187,8 +188,7 @@ function useDashboardData() {
           return;
         }
 
-        const interpretationData =
-          await interpretationResponse.json();
+        const interpretationData = await interpretationResponse.json();
 
         if (isMounted) {
           setInterpretation(
@@ -222,10 +222,6 @@ function useDashboardData() {
 
   useEffect(() => {
     if (!reviewAssessmentId) {
-      setAssessmentResponses(null);
-      setResponsesLoading(false);
-      setResponsesError("");
-
       return undefined;
     }
 

@@ -12,7 +12,7 @@ import WellnessInsights from "../components/dashboard/WellnessInsights";
 import WearableStatus from "../components/dashboard/WearableStatus";
 import MoodCheckIn from "../components/dashboard/MoodCheckIn";
 import LiveSignals from "../components/dashboard/LiveSignals";
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import useDashboardData from "../hooks/useDashboardData";
 import { useNavigate } from "react-router-dom";
 import { clearTokens } from "../services/auth";
