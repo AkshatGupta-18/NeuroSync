@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import Assessment from "./pages/Assessment";
 import AssessmentResult from "./pages/AssessmentResult";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Scans from "./pages/Scans";
 
 function App() {
   return (
@@ -40,6 +41,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AssessmentResult />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/scans"
+          element={
+            <ProtectedRoute>
+              <Scans />
             </ProtectedRoute>
           }
         />
