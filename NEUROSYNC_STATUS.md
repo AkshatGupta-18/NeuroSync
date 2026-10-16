@@ -76,6 +76,13 @@ Django User + JWT / SimpleJWT
 - [x] Assessment loading, error and empty states
 - [x] Dashboard production build verification
 
+### Webcam Heart-Rate Feature
+- [x] Webcam scanning page integrated from the shared main branch
+- [x] MediaPipe Tasks Vision dependency declared and installed
+- [ ] Manually verify camera permission, live preview, and scan behavior in a browser
+- [ ] Validate handling of unavailable cameras, denied permission, and low-quality readings
+- [ ] Clearly communicate that camera-derived heart-rate estimates are experimental and not medical-grade
+
 ### Project Setup
 - [x] React + Vite frontend
 - [x] Django backend
@@ -161,12 +168,14 @@ AkshatGupta-18/NeuroSync
 Development branch:
 vishal-development
 
-Latest confirmed commit:
-0495f76 - Add historical assessment review to dashboard
+Latest confirmed commit on current local branch:
+be8d6b5 - heartrate feature added
 
-Latest confirmed Git status:
-- Branch synced with origin/vishal-development
-- Working tree clean
+Current Git status at this update:
+- Current branch: vishal-development
+- Local branch includes the commits from origin/main through be8d6b5
+- Local branch is ahead of origin/vishal-development; pending changes must be reviewed and committed before pushing
+- The WellnessOverview.jsx lint fix and this status update are intended local changes; push status must be verified separately
 
 Git rules:
 - Work primarily on vishal-development.
@@ -230,8 +239,13 @@ Currently verified:
 - [x] JWT generation works
 - [x] Assessment ownership/isolation test coverage exists
 - [x] Assessment test suite previously verified successfully
-- [x] Frontend production build succeeds
+- [x] Frontend ESLint passes after removing an unused React import
+- [x] Frontend production build succeeds with 54 modules transformed
+- [x] Django assessment test suite passes: 57 tests
+- [x] Django system checks pass (0 silenced)
 - [x] git diff --check passes
+- [ ] Investigate npm audit findings: brace-expansion and source-map-js (2 high-severity advisories)
+- [ ] Review the 528.95 kB minified JavaScript chunk warning and consider safe code splitting
 
 Latest frontend build:
 
@@ -316,5 +330,16 @@ Commit:
 Commit:
 0495f76 - Add historical assessment review to dashboard
 
+### 2026-10-16
+- Integrated the shared main-branch changes into the local development branch using a fast-forward.
+- Integrated the webcam heart-rate scanning feature and reports-related changes already present on main.
+- Removed the unused React import from WellnessOverview.jsx to restore ESLint compliance.
+- Verified frontend lint and production build successfully; build reports a 528.95 kB minified JavaScript chunk warning.
+- Verified the Django assessment suite: 57 tests passed; system checks reported no issues.
+- Identified two high-severity npm audit findings; remediation remains pending.
+- Webcam behavior still requires manual browser testing; no medical-grade accuracy claim is made.
+
+Current local integration commit: be8d6b5 (feature commit from main; local lint fix/status update not yet committed).
+
 ### Next Update
-Manually verify the complete dashboard history/review flow against real backend data, then continue with authentication/authorization regression testing and the next highest-value product feature.
+Manually verify webcam scanning and the complete dashboard history/review flow, inspect and safely remediate npm audit findings, then continue authentication/authorization regression testing.
