@@ -1,3 +1,8 @@
+
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { uploadMedicalReport } from "../../services/medicalReports";
+
 function MedicalScan({
   scanFile,
   setScanFile,
@@ -6,15 +11,38 @@ function MedicalScan({
   IconFile,
   IconX,
 }) {
+  const navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleUpload = async () => {
+    if (!scanFile) return;
+
+    setUploading(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      await uploadMedicalReport(scanFile, "other");
+      setSuccess("Your medical record was uploaded.");
+      setScanFile(null);
+    } catch (err) {
+      setError(err.message || "Unable to upload your medical record.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   return (
     <div className="rounded-3xl border border-white/10 bg-slate-900 p-6 sm:p-7">
       <div>
         <p className="text-sm font-medium text-slate-200">
-          Medical scan
+          Medical records
         </p>
 
         <p className="mt-1 text-xs text-slate-500">
-          Upload a report or scan for your NeuroSync record.
+          Securely upload a report to your personal health library.
         </p>
       </div>
 
@@ -28,14 +56,19 @@ function MedicalScan({
         </p>
 
         <p className="mt-1 text-xs text-slate-500">
-          PDF, JPG or PNG
+          PDF, JPG or PNG · Maximum 15 MB
         </p>
 
         <input
           type="file"
           accept=".pdf,.jpg,.jpeg,.png"
           className="hidden"
-          onChange={handleScanChange}
+          onChange={(event) => {
+            setError("");
+            setSuccess("");
+            handleScanChange(event);
+          }}
+          disabled={uploading}
         />
       </label>
 
@@ -57,7 +90,12 @@ function MedicalScan({
 
           <button
             type="button"
-            onClick={() => setScanFile(null)}
+            onClick={() => {
+              setScanFile(null);
+              setError("");
+              setSuccess("");
+            }}
+            disabled={uploading}
             className="rounded-lg p-1.5 text-slate-500 hover:bg-white/5 hover:text-slate-200"
             aria-label="Remove selected file"
           >
@@ -65,6 +103,37 @@ function MedicalScan({
           </button>
         </div>
       )}
+
+      {error && (
+        <p role="alert" className="mt-3 text-xs text-rose-300">
+          {error}
+        </p>
+      )}
+
+      {success && (
+        <p role="status" className="mt-3 text-xs text-emerald-300">
+          {success}
+        </p>
+      )}
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={handleUpload}
+          disabled={!scanFile || uploading}
+          className="rounded-xl bg-emerald-400 px-4 py-2.5 text-xs font-semibold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {uploading ? "Uploading..." : "Upload record"}
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/medical-records")}
+          className="rounded-xl border border-white/10 px-4 py-2.5 text-xs font-medium text-slate-300 hover:bg-white/5"
+        >
+          View all records
+        </button>
+      </div>
     </div>
   );
 }

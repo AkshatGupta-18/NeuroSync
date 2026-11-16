@@ -1,3 +1,6 @@
+
+import { useLocation } from "react-router-dom";
+
 import {
   IconMark,
   IconClose,
@@ -26,8 +29,13 @@ const navItems = [
     icon: IconTrend,
   },
   {
-    label: "Medical scans",
+    label: "Wellness scan",
     path: "/scans",
+    icon: IconScan,
+  },
+  {
+    label: "Medical records",
+    path: "/medical-records",
     icon: IconScan,
   },
   {
@@ -43,6 +51,8 @@ function DashboardSidebar({
   navigate,
   handleLogout,
 }) {
+  const location = useLocation();
+
   return (
     <>
       {sidebarOpen && (
@@ -85,15 +95,16 @@ function DashboardSidebar({
           </button>
         </div>
 
-        <nav className="mt-10 space-y-1">
+        <nav className="mt-10 space-y-1" aria-label="Main navigation">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const active = item.path === "/dashboard";
+            const active = location.pathname === item.path;
 
             return (
               <button
                 key={item.label}
                 type="button"
+                aria-current={active ? "page" : undefined}
                 onClick={() => {
                   navigate(item.path);
                   setSidebarOpen(false);

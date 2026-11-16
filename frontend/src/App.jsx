@@ -8,6 +8,7 @@ import Assessment from "./pages/Assessment";
 import AssessmentResult from "./pages/AssessmentResult";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Scans from "./pages/Scans";
+import MedicalRecords from "./pages/MedicalRecords";
 
 function App() {
   return (
@@ -52,6 +53,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/medical-records"
+          element={
+            <ProtectedRoute>
+              <MedicalRecords />
+            </ProtectedRoute>
+         }
+       />
       </Routes>
     </BrowserRouter>
   );

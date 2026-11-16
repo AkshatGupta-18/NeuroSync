@@ -1,8 +1,8 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
 from rest_framework_simplejwt.views import TokenRefreshView
+from django.urls import include, path
 
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path("api/", include("api.urls")),
     path("api/users/", include("users.urls")),
     path("api/assessments/", include("assessments.urls")),
+    path("api/reports/", include("reports.urls")),
     path(
         "api/users/token/refresh/",
         TokenRefreshView.as_view(),

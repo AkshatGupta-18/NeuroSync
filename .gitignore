@@ -25,3 +25,6 @@ Thumbs.db
 
 # User-uploaded/generated media
 backend/media/
+
+# Private medical records - never commit uploaded patient documents
+/backend/private_medical_records/

@@ -1,4 +1,4 @@
-import Alerts from "../components/dashboard/Alerts";
+﻿import Alerts from "../components/dashboard/Alerts";
 import MedicalScan from "../components/dashboard/MedicalScan";
 import RecentActivity from "../components/dashboard/RecentActivity";
 import WellnessHistory from "../components/dashboard/WellnessHistory";
